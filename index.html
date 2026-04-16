@@ -11,7 +11,7 @@
 
     <style>
         /* =================================================================
-           TEMA EDITORIAL CÁLIDO Y TIPOGRAFÍA (HIGH-TIER DESIGN)
+           TEMA EDITORIAL CÁLIDO Y TIPOGRAFÍA ORIGINAL (HIGH-TIER DESIGN)
            ================================================================= */
         :root {
             --bg-primary:    #f7f5f0; 
@@ -22,9 +22,9 @@
             --border-subtle: rgba(41, 39, 36, 0.08);
             --voxel-slate: #536969;
             --voxel-rust:  #b44b3d;
-            --voxel-sand:  #c9b18d;
+            --voxel-sand:  #b79f86;
             --voxel-sage:  #73835f;
-            --voxel-gold:  #d09030;
+            --voxel-gold:  #c47d26;
             --voxel-dark:  #423b33;
             --font-display: 'Newsreader', serif;
             --font-body:    'Source Sans 3', sans-serif;
@@ -101,12 +101,10 @@
 
         .visual-panel {
             flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
-            background: rgba(226, 221, 214, 0.85);
+            background: #9b8d7f;
             background-image: linear-gradient(var(--border-subtle) 1px, transparent 1px),
                               linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
             background-size: 60px 60px; background-position: center center;
-            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
-            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
             overflow: hidden;
         }
 
@@ -243,7 +241,9 @@
         }
         .voxel [class^="f-"] {
             position: absolute; width: 41px; height: 41px; margin: -0.5px;
-            backface-visibility: hidden; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
+            backface-visibility: hidden;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.12);
         }
         .f-front  { transform: translateZ(20px);                  background: var(--v-color); }
         .f-back   { transform: translateZ(-20px) rotateY(180deg); background: color-mix(in srgb, var(--v-color) 45%, black); }
@@ -271,7 +271,8 @@
 
     <!-- BARRA DE PROGRESO -->
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-    <div class="slide-counter" id="slide-counter">1 / 11</div>
+    <!-- Inicializado en 12 debido a la nueva diapositiva -->
+    <div class="slide-counter" id="slide-counter">1 / 12</div>
 
     <!-- MODAL MAESTRO (Dinámico) -->
     <div class="modal-overlay" id="main-modal">
@@ -306,8 +307,25 @@
         <div class="keyboard-hint">↑ ↓ para navegar · espacio para avanzar</div>
     </section>
 
-    <!-- ===================== SLIDE 2: ADAPTER CONCEPTO ===================== -->
+    <!-- ===================== SLIDE 2: INTRODUCCIÓN (NUEVA) ===================== -->
     <section class="slide" id="slide-2">
+        <div class="split-layout">
+            <div class="content-panel">
+                <p class="slide-label reveal">00 / Fundamentos</p>
+                <h2 class="reveal">¿Qué son los<br>Patrones de Diseño?</h2>
+                <p class="reveal">Son <strong>soluciones típicas y probadas</strong> a problemas comunes en el diseño de software. No son código listo para copiar y pegar, sino plantillas conceptuales.</p>
+                <ul class="reveal">
+                    <li>Establecen un lenguaje común para los desarrolladores.</li>
+                    <li>Promueven la reutilización y mantenibilidad del código.</li>
+                    <li>Fueron popularizados por el <span class="interactive-term" data-title="Historia y origen del Gang of Four" data-info="<p>El Gang of Four (GoF) es el grupo de autores (Erich Gamma, Richard Helm, Ralph Johnson y John Vlissides) que en 1994 publicó el libro <strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong>, texto que consolidó el lenguaje común de los patrones de diseño.</p> <p>Comprender cómo surgió esta obra ayuda a dimensionar por qué sigue siendo referencia imprescindible treinta años después.</p>"><strong>Gang of Four (GoF)</strong></span> en 1994.</li>
+                </ul>
+            </div>
+            <div class="visual-panel"><div class="scene-3d"><div class="voxel-world" id="world-intro"></div></div></div>
+        </div>
+    </section>
+
+    <!-- ===================== SLIDE 3: ADAPTER CONCEPTO ===================== -->
+    <section class="slide" id="slide-3">
         <div class="split-layout">
             <div class="content-panel">
                 <p class="slide-label reveal">01 / Adapter</p>
@@ -324,8 +342,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 3: ADAPTER CÓDIGO ===================== -->
-    <section class="slide" id="slide-3">
+    <!-- ===================== SLIDE 4: ADAPTER CÓDIGO ===================== -->
+    <section class="slide" id="slide-4">
         <div class="centered-layout">
             <p class="slide-label reveal">01 / Adapter — Implementación Java</p>
             <div class="code-block reveal"><span class="tcm">// Interfaz esperada por el cliente</span>
@@ -347,8 +365,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 4: BUILDER CONCEPTO ===================== -->
-    <section class="slide" id="slide-4">
+    <!-- ===================== SLIDE 5: BUILDER CONCEPTO ===================== -->
+    <section class="slide" id="slide-5">
         <div class="split-layout">
             <div class="content-panel">
                 <p class="slide-label reveal">02 / Builder</p>
@@ -365,8 +383,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 5: BUILDER CÓDIGO ===================== -->
-    <section class="slide" id="slide-5">
+    <!-- ===================== SLIDE 6: BUILDER CÓDIGO ===================== -->
+    <section class="slide" id="slide-6">
         <div class="centered-layout">
             <p class="slide-label reveal">02 / Builder — Implementación Java</p>
             <div class="code-block reveal"><span class="tk">class</span> <span class="tc">Reporte</span> {
@@ -390,8 +408,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 6: ITERATOR CONCEPTO ===================== -->
-    <section class="slide" id="slide-6">
+    <!-- ===================== SLIDE 7: ITERATOR CONCEPTO ===================== -->
+    <section class="slide" id="slide-7">
         <div class="split-layout">
             <div class="content-panel">
                 <p class="slide-label reveal">03 / Iterator</p>
@@ -408,8 +426,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 7: ITERATOR CÓDIGO ===================== -->
-    <section class="slide" id="slide-7">
+    <!-- ===================== SLIDE 8: ITERATOR CÓDIGO ===================== -->
+    <section class="slide" id="slide-8">
         <div class="centered-layout">
             <p class="slide-label reveal">03 / Iterator — Implementación Java</p>
             <div class="code-block reveal"><span class="tcm">// Contrato del iterador</span>
@@ -431,8 +449,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 8: TAXONOMÍA GOF ===================== -->
-    <section class="slide" id="slide-8">
+    <!-- ===================== SLIDE 9: TAXONOMÍA GOF ===================== -->
+    <section class="slide" id="slide-9">
         <div class="centered-layout">
             <h2 class="reveal">Taxonomía GoF</h2>
             <div class="table-scroll reveal">
@@ -455,8 +473,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 9: TRADE-OFFS ===================== -->
-    <section class="slide" id="slide-9">
+    <!-- ===================== SLIDE 10: TRADE-OFFS ===================== -->
+    <section class="slide" id="slide-10">
         <div class="centered-layout">
             <h2 class="reveal">Análisis de Trade-offs</h2>
             <div class="grid-3 reveal">
@@ -482,8 +500,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 10: CUÁNDO USAR ===================== -->
-    <section class="slide" id="slide-10">
+    <!-- ===================== SLIDE 11: CUÁNDO USAR ===================== -->
+    <section class="slide" id="slide-11">
         <div class="centered-layout">
             <h2 class="reveal">¿Cuándo usar cada patrón?</h2>
             <div class="grid-3 reveal">
@@ -512,8 +530,8 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 11: CONCLUSIONES ===================== -->
-    <section class="slide" id="slide-11">
+    <!-- ===================== SLIDE 12: CONCLUSIONES ===================== -->
+    <section class="slide" id="slide-12">
         <div class="split-layout">
             <div class="content-panel">
                 <h2 class="reveal">Conclusiones</h2>
@@ -591,7 +609,7 @@
             sage:  "var(--voxel-sage)", gold:  "var(--voxel-gold)", dark:  "var(--voxel-dark)"
         };
 
-        var faceNames = ["front", "back", "right", "left", "top", "bottom"];
+        var faceNames =["front", "back", "right", "left", "top", "bottom"];
 
         function createVoxel(x, y, z, color, id) {
             var el = document.createElement("div");
@@ -626,7 +644,7 @@
 
         function renderTitleScene() {
             function buildCheckerboard(worldId) {
-                var voxels = [];
+                var voxels =[];
                 for (var x = 0; x < 3; x++) {
                     for (var z = 0; z < 3; z++) {
                         for (var y = 0; y < 3; y++) {
@@ -649,8 +667,29 @@
             buildCheckerboard('world-conclusion');
         }
 
+        // Animación abstracta (cimientos) para la nueva diapositiva de introducción
+        function renderIntroScene() {
+            var voxels =[];
+            // Bloques base (cimientos de los patrones)
+            for(var x = -1; x <= 1; x++) {
+                for(var z = -1; z <= 1; z++) {
+                    voxels.push(createVoxel(x, 1, z, colors.sand));
+                }
+            }
+            // Bloque principal
+            voxels.push(createVoxel(0, 0, 0, colors.rust));
+
+            renderScene('world-intro', voxels);
+            var world = document.getElementById('world-intro');
+            var angle = -45;
+            setInterval(function () {
+                angle -= 0.3;
+                if (world) world.style.transform = "rotateX(-25deg) rotateY(" + angle + "deg)";
+            }, 50);
+        }
+
         function renderAdapterScene() {
-            var voxels = [];
+            var voxels =[];
             voxels.push(createVoxel(-3,  0, 0, colors.slate));
             voxels.push(createVoxel(-3,  1, 0, colors.slate));
             voxels.push(createVoxel(-3, -1, 0, colors.slate));
@@ -696,7 +735,7 @@
 
         var builderPlan = [[-2,-1.5,0],[-1,-1.5,0],[0,-1.5,0],[1,-1.5,0],[2,-1.5,0],[-2,-0.5,0],[-2,0.5,0],[-2,1.5,0],[ 2,-0.5,0],[ 2,0.5,0],[ 2,1.5,0],[-2, 2.5,0],[-1,2.5,0],[0,2.5,0],[1,2.5,0],[2,2.5,0]];
         function renderBuilderScene() {
-            var voxels = [];
+            var voxels =[];
             for (var i = 0; i < builderPlan.length; i++) {
                 var pos = builderPlan[i];
                 var v = createVoxel(pos[0], pos[1] + 6, pos[2], colors.sage, "build-piece-" + i);
@@ -737,7 +776,7 @@
 
         var pathCoords = [[0,0,0],[1,0,0],[2,0,0],[2,0,1],[2,0,2],[1,0,2],[0,0,2],[-1,0,2],[-2,0,2],[-2,0,1],[-2,0,0],[-2,0,-1],[-2,0,-2],[-1,0,-2],[0,0,-2],[1,0,-2],[2,0,-2],[3,0,-2],[3,0,-1]];
         function renderIteratorScene() {
-            var voxels = [];
+            var voxels =[];
             for (var i = 0; i < pathCoords.length; i++) {
                 var pos = pathCoords[i];
                 voxels.push(createVoxel(pos[0], pos[1], pos[2], colors.dark, "path-node-" + i));
@@ -777,6 +816,7 @@
 
         setTimeout(function () {
             renderTitleScene();
+            renderIntroScene(); // Se llama la renderización de la nueva diapositiva
             renderAdapterScene(); loopAdapter();
             renderBuilderScene(); loopBuilder();
             renderIteratorScene(); loopIterator();
