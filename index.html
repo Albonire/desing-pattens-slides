@@ -163,6 +163,43 @@
         .code-block::before { content: ""; position: absolute; top: 15px; left: 17px; width: 9px; height: 9px; border-radius: 50%; background: #4a453f; box-shadow: 15px 0 0 #4a453f, 30px 0 0 #4a453f; }
         .tk { color: #d19a66; } .tc { color: #56b6c2; } .ts { color: #98c379; } .tcm { color: #7f848e; font-style: italic; } .tn { color: #e5c07b; }
 
+        /* ===================== NUEVO: TERMINAL Y RUN BUTTON ===================== */
+        .code-terminal-wrapper {
+            display: flex; gap: clamp(1rem, 2vw, 2rem); align-items: stretch; width: 100%;
+        }
+        .code-editor-container {
+            flex: 1.2; position: relative; display: flex; flex-direction: column;
+        }
+        .run-btn {
+            position: absolute; top: 12px; right: 15px;
+            background: rgba(115, 131, 95, 0.15); border: 1px solid var(--voxel-sage);
+            color: var(--voxel-sage); padding: 0.35rem 0.8rem; border-radius: 6px;
+            font-family: var(--font-mono); font-size: 0.8rem; font-weight: 500;
+            cursor: pointer; transition: all 0.3s ease; z-index: 10;
+        }
+        .run-btn:hover { background: var(--voxel-sage); color: white; }
+        
+        .terminal-panel {
+            flex: 0.8; background: #151413; border-radius: 12px; 
+            border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+            display: flex; flex-direction: column; overflow: hidden;
+            font-family: var(--font-mono); font-size: var(--small-size); color: #d4d0c8;
+        }
+        .terminal-header {
+            background: #1f1d1a; padding: 0.7rem 1rem; display: flex; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.03); position: relative;
+        }
+        .terminal-dots { display: flex; gap: 6px; }
+        .terminal-dots span { width: 10px; height: 10px; border-radius: 50%; }
+        .terminal-title {
+            position: absolute; left: 50%; transform: translateX(-50%);
+            color: #7f848e; font-size: 0.75rem; letter-spacing: 0.05em;
+        }
+        .terminal-body { padding: 1.2rem; line-height: 1.6; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.2rem;}
+        .blink { animation: blinker 1s linear infinite; }
+        @keyframes blinker { 50% { opacity: 0; } }
+
+        /* ===================== TABLAS Y TARJETAS ===================== */
         .table-scroll { overflow-x: auto; margin-top: var(--content-gap); background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border-subtle); padding: 1rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
         .comp-table { width: 100%; min-width: 600px; border-collapse: collapse; font-size: var(--small-size); }
         .comp-table th { text-align: left; padding: 1rem 1.1rem; background: var(--bg-secondary); border-bottom: 2px solid var(--voxel-dark); font-family: var(--font-display); font-weight: 500; font-style: italic; font-size: 1.1em; color: var(--text-primary); }
@@ -264,6 +301,7 @@
             .progress-track { top: 0; left: 0; width: 100%; height: 4px; transform: none; border-radius: 0; }
             .progress-fill { width: 0%; height: 100%; border-radius: 0; }
             .slide-counter { bottom: 1rem; left: auto; right: 1.2rem; transform: none; font-size: 0.9rem; }
+            .code-terminal-wrapper { flex-direction: column; }
         }
     </style>
 </head>
@@ -271,17 +309,14 @@
 
     <!-- BARRA DE PROGRESO -->
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-    <!-- Inicializado en 12 debido a la nueva diapositiva -->
     <div class="slide-counter" id="slide-counter">1 / 12</div>
 
-    <!-- MODAL MAESTRO (Dinámico) -->
+    <!-- MODAL MAESTRO -->
     <div class="modal-overlay" id="main-modal">
         <div class="modal-content">
             <button class="close-modal" id="close-modal">✕</button>
             <h2 class="modal-title" id="modal-title">Título Dinámico</h2>
-            <div class="modal-body" id="modal-body">
-                Contenido dinámico aquí...
-            </div>
+            <div class="modal-body" id="modal-body">Contenido dinámico aquí...</div>
         </div>
     </div>
 
@@ -307,7 +342,7 @@
         <div class="keyboard-hint">↑ ↓ para navegar · espacio para avanzar</div>
     </section>
 
-    <!-- ===================== SLIDE 2: INTRODUCCIÓN (NUEVA) ===================== -->
+    <!-- ===================== SLIDE 2: INTRODUCCIÓN ===================== -->
     <section class="slide" id="slide-2">
         <div class="split-layout">
             <div class="content-panel">
@@ -342,26 +377,55 @@
         </div>
     </section>
 
-    <!-- ===================== SLIDE 4: ADAPTER CÓDIGO ===================== -->
+    <!-- ===================== SLIDE 4: ADAPTER CÓDIGO (INTERACTIVO) ===================== -->
     <section class="slide" id="slide-4">
         <div class="centered-layout">
-            <p class="slide-label reveal">01 / Adapter — Implementación Java</p>
-            <div class="code-block reveal"><span class="tcm">// Interfaz esperada por el cliente</span>
+            <p class="slide-label reveal">01 / Adapter — Implementación Executable</p>
+            <div class="code-terminal-wrapper reveal">
+                <!-- Editor Panel -->
+                <div class="code-editor-container">
+                    <button class="run-btn" id="run-adapter-btn">▶ Run Code</button>
+                    <div class="code-block" style="padding-top: 2.8rem;">
 <span class="tk">interface</span> <span class="tc">Reproductor</span> { <span class="tk">void</span> <span class="tn">play</span>(String archivo); }
 
-<span class="tcm">// Clase existente — interfaz incompatible</span>
+<span class="tcm">// Clase legado incompatible</span>
 <span class="tk">class</span> <span class="tc">ReproductorLegado</span> {
-    <span class="tk">public void</span> <span class="tn">reproducirMP4</span>(String ruta) { System.out.println(<span class="ts">"Play: "</span> + ruta); }
+    <span class="tk">public void</span> <span class="tn">reproducirMP4</span>(String r) { 
+        System.out.println(<span class="ts">"Play: "</span> + r); 
+    }
 }
 
-<span class="tcm">// Adaptador: envuelve lo incompatible, expone lo esperado</span>
+<span class="tcm">// El Adaptador (Wrapper)</span>
 <span class="tk">class</span> <span class="tc">AdaptadorMP4</span> <span class="tk">implements</span> <span class="tc">Reproductor</span> {
-    <span class="tk">private final</span> <span class="tc">ReproductorLegado</span> adaptado;
-    <span class="tc">AdaptadorMP4</span>(<span class="tc">ReproductorLegado</span> r) { <span class="tk">this</span>.adaptado = r; }
+    <span class="tk">private</span> <span class="tc">ReproductorLegado</span> adp;
+    <span class="tc">AdaptadorMP4</span>(<span class="tc">ReproductorLegado</span> r) { <span class="tk">this</span>.adp = r; }
+    <span class="tk">public void</span> <span class="tn">play</span>(String a) { adp.reproducirMP4(a); }
+}
 
-    @Override
-    <span class="tk">public void</span> <span class="tn">play</span>(String archivo) { adaptado.reproducirMP4(archivo); }
+<span class="tcm">// Cliente de ejecución</span>
+<span class="tk">public class</span> <span class="tc">Main</span> {
+    <span class="tk">public static void</span> <span class="tn">main</span>(String[] args) {
+        <span class="tc">Reproductor</span> rep = <span class="tk">new</span> <span class="tc">AdaptadorMP4</span>(<span class="tk">new</span> <span class="tc">ReproductorLegado</span>());
+        rep.play(<span class="ts">"tutorial.mp4"</span>);
+    }
 }</div>
+                </div>
+                
+                <!-- Terminal Panel -->
+                <div class="terminal-panel">
+                    <div class="terminal-header">
+                        <div class="terminal-dots">
+                            <span style="background:#ed6a5e;"></span>
+                            <span style="background:#f4bf4f;"></span>
+                            <span style="background:#61c554;"></span>
+                        </div>
+                        <span class="terminal-title">bash -- jdk-21</span>
+                    </div>
+                    <div class="terminal-body" id="term-adapter">
+                        <div><span class="tc">$</span> <span class="blink">_</span></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -572,23 +636,17 @@
             modalOverlay.classList.remove('active');
         }
 
-        // Listener Global mejorado con .closest()
         document.addEventListener('click', function(e) {
-            // 1. Check si es un término interactivo (Deep Dive)
             const interactiveTerm = e.target.closest('.interactive-term');
             if (interactiveTerm) {
                 openModal(interactiveTerm.dataset.title, interactiveTerm.dataset.info);
                 return;
             }
-
-            // 2. Check si es una tarjeta de caso real
             const card = e.target.closest('.card');
             if (card && card.dataset.title) {
                 openModal(card.dataset.title, card.dataset.info);
                 return;
             }
-
-            // 3. Caso especial GoF trigger
             if (e.target.id === 'gof-trigger') {
                 openModal("Historia y origen del Gang of Four", 
                     `<p>El Gang of Four (GoF) es el grupo de autores que en 1994 publicó el libro <strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong>, texto que consolidó el lenguaje común de los patrones de diseño.</p>
@@ -600,6 +658,42 @@
 
         closeModal.onclick = closePortal;
         window.onclick = function(event) { if (event.target == modalOverlay) closePortal(); };
+
+        /* ============================================================
+           SIMULADOR DE TERMINAL EJECUTABLE (Adapter)
+           ============================================================ */
+        const runBtn = document.getElementById('run-adapter-btn');
+        const termOutput = document.getElementById('term-adapter');
+        let isRunning = false;
+
+        if(runBtn && termOutput) {
+            runBtn.addEventListener('click', function() {
+                if(isRunning) return;
+                isRunning = true;
+                
+                runBtn.innerHTML = '⏳ Compilando...';
+                runBtn.style.opacity = '0.7';
+                
+                // Clear and start simulation
+                termOutput.innerHTML = '<div><span class="tc">$</span> javac Main.java</div>';
+                
+                // Step 2: Run
+                setTimeout(() => {
+                    termOutput.innerHTML += '<div><span class="tc">$</span> java Main</div>';
+                    runBtn.innerHTML = '⚙️ Ejecutando...';
+                }, 700);
+                
+                // Step 3: Print Output
+                setTimeout(() => {
+                    termOutput.innerHTML += '<div style="color: #98c379; font-weight: 500; margin: 0.8rem 0; font-size: 1.1em;">&gt; Play: tutorial.mp4</div>';
+                    termOutput.innerHTML += '<div><span class="tc">$</span> <span class="blink">_</span></div>';
+                    
+                    runBtn.innerHTML = '▶ Re-Run Code';
+                    runBtn.style.opacity = '1';
+                    isRunning = false;
+                }, 1600);
+            });
+        }
 
         /* ============================================================
            VOXEL ENGINE
@@ -667,42 +761,28 @@
             buildCheckerboard('world-conclusion');
         }
 
-        // ============================================================
-        // NUEVA ANIMACIÓN 3D PARA INTRODUCCIÓN ("El Templo / Fundamento")
-        // ============================================================
         function renderIntroScene() {
             var voxels =[];
-            
-            // 1. Base sólida (Cimientos)
             for(var x = -1; x <= 1; x++) {
                 for(var z = -1; z <= 1; z++) {
                     voxels.push(createVoxel(x, 2, z, colors.slate));
                 }
             }
-            
-            // 2. Pilares de la estructura (Soporte)
             var pilares = [[-1,-1], [-1,1], [1,-1], [1,1]];
             pilares.forEach(function(p) {
                 voxels.push(createVoxel(p[0], 1, p[1], colors.sand));
                 voxels.push(createVoxel(p[0], 0, p[1], colors.sand));
             });
-            
-            // 3. Bóveda superior hueca
             for(var x = -1; x <= 1; x++) {
                 for(var z = -1; z <= 1; z++) {
-                    if(x === 0 && z === 0) continue; // Hueco en el medio
+                    if(x === 0 && z === 0) continue; 
                     voxels.push(createVoxel(x, -1, z, colors.sage));
                 }
             }
-            
-            // 4. El "Patrón" (Núcleo central levitando)
             var core = createVoxel(0, 0.5, 0, colors.rust);
             voxels.push(core);
 
-            // Renderizar la escena completa
             renderScene('world-intro', voxels);
-
-            // Animación continua de giro de la cámara (mundo)
             var world = document.getElementById('world-intro');
             var angle = 45;
             setInterval(function () {
@@ -710,11 +790,9 @@
                 if (world) world.style.transform = "rotateX(-25deg) rotateY(" + angle + "deg)";
             }, 50);
 
-            // Animación suave de levitación del núcleo usando transiciones CSS nativas
             core.element.style.transition = 'transform 1.5s ease-in-out';
             var isUp = true;
             setInterval(function() {
-                // Alterna entre la posición de arriba y la de abajo
                 core.element.style.setProperty('--y', isUp ? 0.8 : -0.2);
                 isUp = !isUp;
             }, 1500);
@@ -848,7 +926,7 @@
 
         setTimeout(function () {
             renderTitleScene();
-            renderIntroScene(); // Construye el nuevo modelo vistoso 3D
+            renderIntroScene(); 
             renderAdapterScene(); loopAdapter();
             renderBuilderScene(); loopBuilder();
             renderIteratorScene(); loopIterator();
@@ -894,7 +972,7 @@
 
         document.addEventListener("keydown", function (e) {
             var fwd = ["ArrowDown", "ArrowRight", " ", "PageDown"];
-            var bck = ["ArrowUp",   "ArrowLeft",       "PageUp"];
+            var bck =["ArrowUp",   "ArrowLeft",       "PageUp"];
             if (fwd.indexOf(e.key) !== -1) {
                 e.preventDefault();
                 slides[Math.min(currentIndex + 1, total - 1)].scrollIntoView({ behavior: "smooth" });
