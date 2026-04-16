@@ -14,38 +14,28 @@
            TEMA EDITORIAL CÁLIDO Y TIPOGRAFÍA (HIGH-TIER DESIGN)
            ================================================================= */
         :root {
-            /* Fondos cálidos (Avena / Crema) */
             --bg-primary:    #f7f5f0; 
             --bg-secondary:  #efece5;
             --bg-tertiary:   #e3dfd6;
-            
-            /* Texto (Carbón / Espresso profundo) */
             --text-primary:  #292724;
             --text-secondary:#635d56;
             --border-subtle: rgba(41, 39, 36, 0.08);
-
-            /* Voxels - Paleta Terracota y Oliva Cálida */
-            --voxel-slate: #667b7e; /* Verde mar tiza */
-            --voxel-rust:  #c26d53; /* Terracota intenso */
-            --voxel-sand:  #d9cbb8; /* Arena cálida */
-            --voxel-sage:  #8b9c7b; /* Oliva claro */
-            --voxel-gold:  #d48c46; /* Ocre */
-            --voxel-dark:  #5e5750; /* Piedra volcánica */
-
+            --voxel-slate: #667b7e; 
+            --voxel-rust:  #c26d53; 
+            --voxel-sand:  #d9cbb8; 
+            --voxel-sage:  #8b9c7b; 
+            --voxel-gold:  #d48c46; 
+            --voxel-dark:  #5e5750; 
             --font-display: 'Newsreader', serif;
             --font-body:    'Source Sans 3', sans-serif;
             --font-mono:    'Fira Code', monospace;
-
             --title-size: clamp(2.4rem, 6vw, 4.5rem);
             --h2-size:    clamp(1.8rem, 4vw, 3.2rem);
             --h3-size:    clamp(1.2rem, 2.5vw, 1.6rem);
             --body-size:  clamp(0.95rem, 1.4vw, 1.1rem);
             --small-size: clamp(0.78rem, 0.95vw, 0.9rem);
-
             --slide-padding: clamp(2.5rem, 6vw, 5.5rem);
             --content-gap:   clamp(1.2rem, 2.5vw, 2.2rem);
-
-            /* Curvas cinematográficas */
             --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
             --ease-reveal: cubic-bezier(0.25, 1, 0.2, 1);
             --dur: 1.2s;
@@ -138,7 +128,20 @@
             content: ''; display: block; width: 2rem; height: 1px; background-color: var(--voxel-rust); opacity: 0.6;
         }
 
-        /* ELEMENTO CLICKABLE */
+        /* ELEMENTOS INTERACTIVOS (Deep Dives) */
+        .interactive-term {
+            color: var(--voxel-rust);
+            text-decoration: underline rgba(194, 109, 83, 0.3);
+            text-underline-offset: 3px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+        .interactive-term:hover {
+            background: rgba(194, 109, 83, 0.1);
+            text-decoration-color: var(--voxel-rust);
+        }
+
         .highlight-text { 
             font-family: var(--font-mono); font-size: 0.88em; color: var(--voxel-slate); 
             border-left: 2px solid var(--voxel-slate); padding: 0.5rem 1rem; 
@@ -147,15 +150,14 @@
             display: inline-block;
         }
         .highlight-text:hover {
-            background: var(--voxel-slate);
-            color: white;
-            border-left-color: var(--voxel-rust);
+            background: var(--voxel-slate); color: white; border-left-color: var(--voxel-rust);
             transform: translateX(5px);
         }
 
         .authors { margin-top: auto; padding-top: var(--content-gap); border-top: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); }
         .authors span { display: block; color: var(--text-primary); font-weight: 500; margin-top: 0.25rem; }
-        .keyboard-hint { position: absolute; bottom: 1.8rem; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); opacity: 0.5; white-space: nowrap; user-select: none; }
+        
+        .keyboard-hint { position: absolute; bottom: 1.8rem; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); opacity: 0.5; white-space: nowrap; user-select: none; z-index: 20;}
 
         /* ===================== CODE BLOCKS & TABLES ===================== */
         .code-block { font-family: var(--font-mono); font-size: var(--small-size); background: #1f1d1a; padding: 2rem 1.75rem 1.5rem; border-radius: 12px; color: #d4d0c8; white-space: pre; overflow-x: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.12); line-height: 1.7; position: relative; border: 1px solid rgba(255,255,255,0.05); }
@@ -168,8 +170,16 @@
         .comp-table td { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); vertical-align: top; }
         .comp-table td:first-child { font-family: var(--font-mono); color: var(--voxel-rust); font-weight: 600; }
 
-        .card { padding: clamp(1.5rem, 3vw, 2.5rem); background: var(--bg-primary); border: 1px solid var(--border-subtle); border-radius: 16px; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); transition: transform 0.4s ease, box-shadow 0.4s ease; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08); }
+        .card { 
+            padding: clamp(1.5rem, 3vw, 2.5rem); background: var(--bg-primary); 
+            border: 1px solid var(--border-subtle); border-radius: 16px; 
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); 
+            transition: all 0.4s ease; cursor: pointer;
+        }
+        .card:hover { 
+            transform: translateY(-5px); box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08); 
+            border-color: var(--voxel-rust);
+        }
         .card h3 { font-size: 1.8rem; color: var(--voxel-rust); border-bottom: 1px solid var(--border-subtle); padding-bottom: 0.8rem; margin-bottom: 1.2rem; }
         .card-pro { color: var(--voxel-sage); font-size: var(--small-size); margin-bottom: 0.3rem; font-family: var(--font-mono); display: flex; align-items: flex-start; gap: 0.5rem; }
         .card-con { color: var(--voxel-rust); font-size: var(--small-size); margin-bottom: 0.3rem; font-family: var(--font-mono); display: flex; align-items: flex-start; gap: 0.5rem; }
@@ -181,7 +191,7 @@
         .slide.visible .reveal:nth-child(2) { transition-delay: 0.15s; }
         .slide.visible .reveal:nth-child(3) { transition-delay: 0.25s; }
 
-        /* ===================== MODAL EDITORIAL (POPUP) ===================== */
+        /* ===================== MODAL MAESTRO DINÁMICO ===================== */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(41, 39, 36, 0.3); backdrop-filter: blur(12px);
@@ -262,15 +272,13 @@
     <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
     <div class="slide-counter" id="slide-counter">1 / 11</div>
 
-    <!-- MODAL EDITORIAL (OCULTO POR DEFECTO) -->
-    <div class="modal-overlay" id="gof-modal">
+    <!-- MODAL MAESTRO (Dinámico) -->
+    <div class="modal-overlay" id="main-modal">
         <div class="modal-content">
             <button class="close-modal" id="close-modal">✕</button>
-            <h2 class="modal-title">Historia y origen del Gang of Four</h2>
-            <div class="modal-body">
-                <p>El Gang of Four (GoF) es el grupo de autores que en 1994 publicó el libro <strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong>, texto que consolidó el lenguaje común de los patrones de diseño.</p>
-                <p>Comprender cómo surgió esta obra ayuda a dimensionar por qué sigue siendo referencia imprescindible treinta años después.</p>
-                <p>La historia del GoF se entrelaza con la evolución de la programación orientada a objetos, el auge de los entornos gráficos y la necesidad de sistemas cada vez más reutilizables, mantenibles y abiertos a la colaboración entre equipos globales.</p>
+            <h2 class="modal-title" id="modal-title">Título Dinámico</h2>
+            <div class="modal-body" id="modal-body">
+                Contenido dinámico aquí...
             </div>
         </div>
     </div>
@@ -307,9 +315,8 @@
                 <ul class="reveal">
                     <li>Envuelve un objeto para ocultar su interfaz</li>
                     <li>Reutiliza código existente sin modificarlo</li>
-                    <li>También conocido como <strong>Wrapper</strong></li>
+                    <li>También conocido como <span class="interactive-term" data-title="El Concepto de Wrapper" data-info="Un Wrapper es una clase que envuelve a otra para proporcionar una funcionalidad adicional o cambiar su interfaz sin alterar el código original. Es la esencia del patrón Adapter."><strong>Wrapper</strong></span></li>
                 </ul>
-                <!-- ELEMENTO INTERACTIVO -->
                 <div class="highlight-text reveal" id="gof-trigger">Patrón Estructural — GoF (1994)</div>
             </div>
             <div class="visual-panel"><div class="scene-3d"><div class="voxel-world" id="world-adapter"></div></div></div>
@@ -347,7 +354,7 @@
                 <h2 class="reveal">El Patrón<br>Builder</h2>
                 <p class="reveal">Separa la <strong>construcción de un objeto complejo</strong> de su representación final. Permite crear diferentes representaciones con el mismo proceso.</p>
                 <ul class="reveal">
-                    <li>Construye el objeto paso a paso con interfaz fluida</li>
+                    <li>Construye el objeto paso a paso con <span class="interactive-term" data-title="Interfaz Fluida (Fluent Interface)" data-info="Una interfaz fluida es un estilo de diseño de API que busca hacer que el código sea más legible, encadenando llamadas a métodos (como .setNombre().setEdad().build()). Es la característica principal del Builder moderno."><strong>interfaz fluida</strong></span></li>
                     <li>El <em>Director</em> orquesta la construcción</li>
                     <li>Elimina constructores con demasiados parámetros</li>
                 </ul>
@@ -390,7 +397,7 @@
                 <h2 class="reveal">El Patrón<br>Iterator</h2>
                 <p class="reveal">Proporciona una forma de <strong>acceder secuencialmente</strong> a los elementos de una colección sin exponer su representación interna.</p>
                 <ul class="reveal">
-                    <li>Abstrae la estructura interna de la colección</li>
+                    <li><span class="interactive-term" data-title="Abstracción de Estructura" data-info="El Iterator permite que el cliente recorra una lista, un árbol o un grafo sin saber cómo están almacenados los datos internamente. Solo necesita saber si hay un 'Siguiente' elemento y cómo obtenerlo."><strong>Abstrae la estructura interna</strong></span> de la colección</li>
                     <li>Mismo código de traversal para distintas colecciones</li>
                     <li>Base del patrón for-each moderno</li>
                 </ul>
@@ -479,21 +486,21 @@
         <div class="centered-layout">
             <h2 class="reveal">¿Cuándo usar cada patrón?</h2>
             <div class="grid-3 reveal">
-                <div class="card">
+                <div class="card" data-title="Caso Real: Adapter" data-info="Imagina que tu empresa usa una Base de Datos antigua (Legacy) que devuelve datos en formato XML, pero tu nueva aplicación moderna solo entiende JSON. En lugar de reescribir la base de datos entera, creas un 'Adapter' que recibe el XML y lo entrega como JSON a la aplicación.">
                     <h3>Adapter</h3>
                     <ul style="margin-left:1.2rem; margin-top:0.5rem;">
                         <li>Código legado inmodificable</li>
                         <li>Librerías con API incompatible</li>
                     </ul>
                 </div>
-                <div class="card">
+                <div class="card" data-title="Caso Real: Builder" data-info="En la construcción de consultas SQL complejas (Query Builders), el objeto 'Query' puede tener filtros, ordenamientos, joins y límites. En lugar de un constructor con 20 parámetros, usas .select().where().limit().build(), permitiendo que cada consulta sea diferente pero siga el mismo proceso de construcción.">
                     <h3>Builder</h3>
                     <ul style="margin-left:1.2rem; margin-top:0.5rem;">
                         <li>Constructores gigantes</li>
                         <li>Pasos de creación en orden estricto</li>
                     </ul>
                 </div>
-                <div class="card">
+                <div class="card" data-title="Caso Real: Iterator" data-info="Piensa en un sistema de archivos. Puedes tener carpetas con archivos, subcarpetas, enlaces simbólicos, etc. Un Iterator permite que el usuario haga un 'Listar todo' sin que el programa tenga que exponer si está usando una búsqueda recursiva en disco o una lectura de memoria caché.">
                     <h3>Iterator</h3>
                     <ul style="margin-left:1.2rem; margin-top:0.5rem;">
                         <li>Estructura interna muy compleja</li>
@@ -529,28 +536,51 @@
         "use strict";
 
         /* ============================================================
-           MODAL LOGIC
+           SISTEMA DE MODALES DINÁMICOS
            ============================================================ */
-        const gofTrigger = document.getElementById('gof-trigger');
-        const gofModal = document.getElementById('gof-modal');
+        const modalOverlay = document.getElementById('main-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalBody = document.getElementById('modal-body');
         const closeModal = document.getElementById('close-modal');
 
-        if (gofTrigger && gofModal) {
-            gofTrigger.onclick = function() {
-                gofModal.classList.add('active');
-            };
-
-            closeModal.onclick = function() {
-                gofModal.classList.remove('active');
-            };
-
-            // Cerrar al hacer click fuera del contenido
-            window.onclick = function(event) {
-                if (event.target == gofModal) {
-                    gofModal.classList.remove('active');
-                }
-            };
+        function openModal(title, content) {
+            modalTitle.textContent = title;
+            modalBody.innerHTML = content;
+            modalOverlay.classList.add('active');
         }
+
+        function closePortal() {
+            modalOverlay.classList.remove('active');
+        }
+
+        // Listener Global mejorado con .closest()
+        document.addEventListener('click', function(e) {
+            // 1. Check si es un término interactivo (Deep Dive)
+            const interactiveTerm = e.target.closest('.interactive-term');
+            if (interactiveTerm) {
+                openModal(interactiveTerm.dataset.title, interactiveTerm.dataset.info);
+                return;
+            }
+
+            // 2. Check si es una tarjeta de caso real
+            const card = e.target.closest('.card');
+            if (card && card.dataset.title) {
+                openModal(card.dataset.title, card.dataset.info);
+                return;
+            }
+
+            // 3. Caso especial GoF trigger
+            if (e.target.id === 'gof-trigger') {
+                openModal("Historia y origen del Gang of Four", 
+                    `<p>El Gang of Four (GoF) es el grupo de autores que en 1994 publicó el libro <strong>Design Patterns: Elements of Reusable Object-Oriented Software</strong>, texto que consolidó el lenguaje común de los patrones de diseño.</p>
+                     <p>Comprender cómo surgió esta obra ayuda a dimensionar por qué sigue siendo referencia imprescindible treinta años después.</p>
+                     <p>La historia del GoF se entrelaza con la evolución de la programación orientada a objetos, el auge de los entornos gráficos y la necesidad de sistemas cada vez más reutilizables, mantenibles y abiertos a la colaboración entre equipos globales.</p>`);
+                return;
+            }
+        });
+
+        closeModal.onclick = closePortal;
+        window.onclick = function(event) { if (event.target == modalOverlay) closePortal(); };
 
         /* ============================================================
            VOXEL ENGINE
