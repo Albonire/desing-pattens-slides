@@ -11,45 +11,59 @@
 
     <style>
         /* =================================================================
-           TEMA CLARO PERMANENTE Y TIPOGRAFÍA
+           TEMA EDITORIAL CÁLIDO Y TIPOGRAFÍA (HIGH-TIER DESIGN)
            ================================================================= */
         :root {
-            --bg-primary:    #fdfcfb;
-            --bg-secondary:  #f5f4f2;
-            --bg-tertiary:   #eceae6;
-            --text-primary:  #1c1b1a;
-            --text-secondary:#4a4846;
-            --border-subtle: rgba(0, 0, 0, 0.08);
+            /* Fondos cálidos (Avena / Crema) */
+            --bg-primary:    #f7f5f0; 
+            --bg-secondary:  #efece5;
+            --bg-tertiary:   #e3dfd6;
+            
+            /* Texto (Carbón / Espresso profundo) */
+            --text-primary:  #292724;
+            --text-secondary:#635d56;
+            --border-subtle: rgba(41, 39, 36, 0.08);
 
-            /* PALETA DE COLORES 3D MEJORADA Y ARMONIZADA */
-            --voxel-slate: #5b7c8a; /* Azul Pizarra Suave */
-            --voxel-rust:  #bd6b58; /* Terracota / Óxido */
-            --voxel-sand:  #d6c4b3; /* Arena / Beige */
-            --voxel-sage:  #7b946e; /* Verde Salvia (Builder) */
-            --voxel-gold:  #e09f5b; /* Naranja Dorado (Cursor Iterator) */
-            --voxel-dark:  #75706b; /* Gris Piedra Cálido (Camino Iterator) */
+            /* Voxels - Paleta Terracota y Oliva Cálida */
+            --voxel-slate: #667b7e; /* Verde mar tiza */
+            --voxel-rust:  #c26d53; /* Terracota intenso */
+            --voxel-sand:  #d9cbb8; /* Arena cálida */
+            --voxel-sage:  #8b9c7b; /* Oliva claro */
+            --voxel-gold:  #d48c46; /* Ocre */
+            --voxel-dark:  #5e5750; /* Piedra volcánica */
 
             --font-display: 'Newsreader', serif;
             --font-body:    'Source Sans 3', sans-serif;
             --font-mono:    'Fira Code', monospace;
 
             --title-size: clamp(2.4rem, 6vw, 4.5rem);
-            --h2-size:    clamp(1.8rem, 4vw, 3rem);
+            --h2-size:    clamp(1.8rem, 4vw, 3.2rem);
             --h3-size:    clamp(1.2rem, 2.5vw, 1.6rem);
             --body-size:  clamp(0.95rem, 1.4vw, 1.1rem);
             --small-size: clamp(0.78rem, 0.95vw, 0.9rem);
 
             --slide-padding: clamp(2.5rem, 6vw, 5.5rem);
-            --content-gap:   clamp(1rem, 2.5vw, 2rem);
+            --content-gap:   clamp(1.2rem, 2.5vw, 2.2rem);
 
+            /* Curvas cinematográficas */
             --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --dur: 0.75s;
+            --ease-reveal: cubic-bezier(0.25, 1, 0.2, 1);
+            --dur: 1.2s;
         }
 
         *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
         html { scroll-snap-type: y mandatory; scroll-behavior: smooth; overflow-x: hidden; height: 100%; }
-        body { min-height: 100%; background-color: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); line-height: 1.6; }
+        
+        body { 
+            min-height: 100%; 
+            background-color: var(--bg-primary); 
+            /* Textura de ruido elegante tipo "Papel" */
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.04'/%3E%3C/svg%3E");
+            color: var(--text-primary); 
+            font-family: var(--font-body); 
+            line-height: 1.6; 
+        }
 
         /* ===================== SLIDE BASE ===================== */
         .slide {
@@ -58,52 +72,112 @@
             display: flex; position: relative;
         }
 
-        /* ===================== NAVIGATION UI ===================== */
-        .progress-track { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: var(--bg-tertiary); z-index: 200; }
-        .progress-fill { height: 100%; background: var(--voxel-slate); width: 0%; transition: width 0.5s var(--ease-expo); }
-        .slide-counter { position: fixed; bottom: 1.8rem; right: 2.2rem; font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); opacity: 0.6; z-index: 200; letter-spacing: 0.06em; user-select: none; }
+        /* ===================== NAVIGATION UI EDITORIAL ===================== */
+        .progress-track { 
+            position: fixed; 
+            top: 50%; left: 1.5rem; 
+            transform: translateY(-50%);
+            width: 2px; height: 30vh; 
+            background: var(--bg-tertiary); 
+            z-index: 200; 
+            border-radius: 4px;
+        }
+        .progress-fill { 
+            width: 100%; 
+            height: 0%; 
+            background: var(--voxel-rust); 
+            transition: height 0.8s var(--ease-expo); 
+            border-radius: 4px;
+        }
+        
+        .slide-counter { 
+            position: fixed; 
+            bottom: 2.5rem; 
+            left: 1.6rem; 
+            font-family: var(--font-display); 
+            font-style: italic;
+            font-size: 1.1rem; 
+            color: var(--text-secondary); 
+            z-index: 200; 
+            transform: rotate(-90deg); 
+            transform-origin: left bottom;
+            letter-spacing: 0.05em; 
+            user-select: none; 
+        }
 
         /* Zonas de Click Invisibles */
         .nav-zone {
-            position: fixed; top: 0; width: 30%; height: 100%;
+            position: fixed; top: 0; width: 20%; height: 100%;
             z-index: 100; cursor: pointer; outline: none;
         }
         .zone-left  { left: 0; }
         .zone-right { right: 0; }
 
-        /* ===================== LAYOUTS ===================== */
+        /* ===================== LAYOUTS GLASSMORPHISM ===================== */
         .split-layout { display: flex; width: 100%; height: 100%; }
         
         .content-panel {
-            width: 45%; padding: var(--slide-padding);
+            width: 42%; 
+            padding: var(--slide-padding);
+            margin: 2rem 0 2rem 3rem; 
             display: flex; flex-direction: column; justify-content: center;
-            border-right: 1px solid var(--border-subtle);
-            background: rgba(253, 252, 251, 0.94); backdrop-filter: blur(6px);
+            border-radius: 16px; 
+            border: 1px solid rgba(255, 255, 255, 0.4); 
+            background: rgba(247, 245, 240, 0.65); 
+            backdrop-filter: blur(16px) saturate(120%); 
+            -webkit-backdrop-filter: blur(16px) saturate(120%);
+            box-shadow: 20px 20px 60px rgba(41, 39, 36, 0.03); 
             position: relative; z-index: 10; overflow: hidden;
         }
 
         .visual-panel {
             flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
-            /* REJILLA CUADRICULAR */
+            /* REJILLA CUADRICULAR CON MÁSCARA RADIAL */
             background-image:
-                linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+                linear-gradient(var(--border-subtle) 1px, transparent 1px),
+                linear-gradient(90deg, var(--border-subtle) 1px, transparent 1px);
+            background-size: 60px 60px;
+            background-position: center center;
+            mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
+            -webkit-mask-image: radial-gradient(ellipse at center, black 40%, transparent 80%);
             overflow: hidden;
         }
 
-        .centered-layout { width: 100%; max-width: 1100px; margin: 0 auto; padding: var(--slide-padding); display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        .centered-layout { width: 100%; max-width: 1100px; margin: 0 auto; padding: var(--slide-padding); padding-left: 5rem; display: flex; flex-direction: column; justify-content: center; height: 100%; }
         .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.2rem, 3.5vw, 2.5rem); margin-top: var(--content-gap); }
-        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2.5vw, 2rem); margin-top: var(--content-gap); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1.5rem, 2.5vw, 2.5rem); margin-top: var(--content-gap); }
 
         /* ===================== TYPOGRAPHY ===================== */
-        h1, h2, h3 { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.025em; line-height: 1.1; color: var(--text-primary); margin-bottom: var(--content-gap); }
-        h1 { font-size: var(--title-size); } h2 { font-size: var(--h2-size); } h3 { font-size: var(--h3-size); margin-bottom: 0.7rem; }
+        h1, h2, h3 { 
+            font-family: var(--font-display); 
+            font-weight: 400; 
+            letter-spacing: -0.04em; 
+            line-height: 1.1; 
+            color: var(--text-primary); 
+            margin-bottom: var(--content-gap); 
+        }
+        h1 { font-size: var(--title-size); } h2 { font-size: var(--h2-size); } 
         p, li { font-size: var(--body-size); color: var(--text-secondary); margin-bottom: calc(var(--content-gap) * 0.55); max-width: 58ch; }
         ul { margin-left: 1.4rem; margin-bottom: var(--content-gap); } li { margin-bottom: 0.35rem; }
         strong { color: var(--text-primary); font-weight: 600; }
 
-        .slide-label { font-family: var(--font-mono); font-size: var(--small-size); color: var(--voxel-slate); letter-spacing: 0.06em; margin-bottom: 0.5rem; opacity: 0.75; }
+        .slide-label { 
+            font-family: var(--font-display); 
+            font-style: italic;
+            font-size: clamp(1.1rem, 1.5vw, 1.4rem); 
+            color: var(--voxel-rust); 
+            letter-spacing: 0; 
+            margin-bottom: 1.5rem; 
+            opacity: 0.9;
+            position: relative;
+            padding-left: 2rem;
+        }
+        .slide-label::before {
+            content: ''; position: absolute;
+            left: 0; top: 50%; width: 1.2rem; height: 1px;
+            background-color: var(--voxel-rust);
+        }
+
         .highlight-text { font-family: var(--font-mono); font-size: 0.88em; color: var(--voxel-slate); border-left: 2px solid var(--voxel-slate); padding: 0.5rem 1rem; background: var(--bg-secondary); margin-top: 0.8rem; font-style: italic; }
 
         .authors { margin-top: auto; padding-top: var(--content-gap); border-top: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); }
@@ -111,33 +185,61 @@
         .keyboard-hint { position: absolute; bottom: 1.8rem; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); opacity: 0.5; white-space: nowrap; user-select: none; }
 
         /* ===================== CODE BLOCKS & TABLES ===================== */
-        .code-block { font-family: var(--font-mono); font-size: var(--small-size); background: #1b1b1b; padding: 2rem 1.75rem 1.5rem; border-radius: 6px; color: #d4d4d4; white-space: pre; overflow-x: auto; box-shadow: 0 14px 38px rgba(0,0,0,0.16); line-height: 1.7; position: relative; }
-        .code-block::before { content: ""; position: absolute; top: 15px; left: 17px; width: 9px; height: 9px; border-radius: 50%; background: #484848; box-shadow: 15px 0 0 #484848, 30px 0 0 #484848; }
-        .tk { color: #c678dd; } .tc { color: #61afef; } .ts { color: #98c379; } .tcm { color: #5c6370; font-style: italic; } .tn { color: #e5c07b; }
+        .code-block { font-family: var(--font-mono); font-size: var(--small-size); background: #1f1d1a; padding: 2rem 1.75rem 1.5rem; border-radius: 12px; color: #d4d0c8; white-space: pre; overflow-x: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.12); line-height: 1.7; position: relative; border: 1px solid rgba(255,255,255,0.05); }
+        .code-block::before { content: ""; position: absolute; top: 15px; left: 17px; width: 9px; height: 9px; border-radius: 50%; background: #4a453f; box-shadow: 15px 0 0 #4a453f, 30px 0 0 #4a453f; }
+        .tk { color: #d19a66; } .tc { color: #56b6c2; } .ts { color: #98c379; } .tcm { color: #7f848e; font-style: italic; } .tn { color: #e5c07b; }
 
-        .table-scroll { overflow-x: auto; margin-top: var(--content-gap); }
+        .table-scroll { overflow-x: auto; margin-top: var(--content-gap); background: var(--bg-primary); border-radius: 12px; border: 1px solid var(--border-subtle); padding: 1rem; box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05); }
         .comp-table { width: 100%; min-width: 600px; border-collapse: collapse; font-size: var(--small-size); }
-        .comp-table th { text-align: left; padding: 0.85rem 1.1rem; background: var(--bg-secondary); border-bottom: 2px solid var(--text-primary); font-family: var(--font-display); font-weight: 600; font-size: 0.92em; }
-        .comp-table td { padding: 0.8rem 1.1rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); vertical-align: top; }
-        .comp-table td:first-child { font-family: var(--font-mono); color: var(--voxel-slate); font-weight: 600; }
+        .comp-table th { text-align: left; padding: 1rem 1.1rem; background: var(--bg-secondary); border-bottom: 2px solid var(--voxel-dark); font-family: var(--font-display); font-weight: 500; font-style: italic; font-size: 1.1em; color: var(--text-primary); }
+        .comp-table td { padding: 1rem 1.1rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); vertical-align: top; }
+        .comp-table td:first-child { font-family: var(--font-mono); color: var(--voxel-rust); font-weight: 600; }
         .comp-table tr:last-child td { border-bottom: none; }
 
-        .card { padding: clamp(1.2rem, 2.5vw, 2rem); background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 4px; }
-        .card h3 { margin-bottom: 0.6rem; }
-        .card-pro { color: var(--voxel-sage); font-size: var(--small-size); margin-bottom: 0.2rem; font-family: var(--font-mono); }
-        .card-con { color: var(--voxel-rust); font-size: var(--small-size); margin-bottom: 0.2rem; font-family: var(--font-mono); }
+        /* ===================== BENTO BOX CARDS ===================== */
+        .card { 
+            padding: clamp(1.5rem, 3vw, 2.5rem); 
+            background: var(--bg-primary); 
+            border: 1px solid var(--border-subtle); 
+            border-radius: 16px; 
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08);
+        }
+        .card h3 { 
+            font-size: 1.8rem;
+            color: var(--voxel-rust);
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 0.8rem;
+            margin-bottom: 1.2rem;
+        }
+        .card-pro { color: var(--voxel-sage); font-size: var(--small-size); margin-bottom: 0.3rem; font-family: var(--font-mono); display: flex; align-items: flex-start; gap: 0.5rem; }
+        .card-con { color: var(--voxel-rust); font-size: var(--small-size); margin-bottom: 0.3rem; font-family: var(--font-mono); display: flex; align-items: flex-start; gap: 0.5rem; }
 
-        /* ===================== REVEAL ANIMATIONS ===================== */
-        .reveal { opacity: 0; transform: translateY(16px); transition: opacity var(--dur) var(--ease-expo), transform var(--dur) var(--ease-expo); }
-        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
-        .slide.visible .reveal:nth-child(1) { transition-delay: 0.06s; }
-        .slide.visible .reveal:nth-child(2) { transition-delay: 0.14s; }
-        .slide.visible .reveal:nth-child(3) { transition-delay: 0.22s; }
-        .slide.visible .reveal:nth-child(4) { transition-delay: 0.30s; }
-        .slide.visible .reveal:nth-child(5) { transition-delay: 0.38s; }
-        .slide.visible .reveal:nth-child(6) { transition-delay: 0.46s; }
+        /* ===================== ANIMACIONES CINEMATOGRÁFICAS ===================== */
+        .reveal { 
+            opacity: 0; 
+            transform: translateY(30px) scale(0.98); 
+            transition: opacity 1s var(--ease-reveal), transform 1.2s var(--ease-reveal), clip-path 1.2s var(--ease-reveal); 
+            clip-path: inset(100% 0 0 0);
+        }
+        .slide.visible .reveal { 
+            opacity: 1; 
+            transform: translateY(0) scale(1); 
+            clip-path: inset(-20% 0 -20% 0); /* Deja margen para las sombras box-shadow */
+        }
+        
+        .slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+        .slide.visible .reveal:nth-child(2) { transition-delay: 0.15s; }
+        .slide.visible .reveal:nth-child(3) { transition-delay: 0.25s; }
+        .slide.visible .reveal:nth-child(4) { transition-delay: 0.35s; }
+        .slide.visible .reveal:nth-child(5) { transition-delay: 0.45s; }
+        .slide.visible .reveal:nth-child(6) { transition-delay: 0.55s; }
 
-        /* ===================== 3D VOXEL ENGINE (SIN GAPS) ===================== */
+        /* ===================== 3D VOXEL ENGINE ===================== */
         .scene-3d { perspective: 2400px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
         .voxel-world { position: relative; transform-style: preserve-3d; transform: rotateX(-35deg) rotateY(45deg); width: 0; height: 0; transition: transform 1.5s var(--ease-expo); }
         
@@ -148,16 +250,8 @@
             transition: transform 0.6s var(--ease-expo), opacity 0.4s;
         }
 
-        /* 
-           Corrección de huecos entre caras:
-           1px extra de tamaño + -0.5px margin fuerzan un solapamiento perfecto.
-           border reemplazado por box-shadow interno suave.
-        */
         .voxel [class^="f-"] {
-            position: absolute; 
-            width: 41px; 
-            height: 41px;
-            margin: -0.5px;
+            position: absolute; width: 41px; height: 41px; margin: -0.5px;
             backface-visibility: hidden;
             box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
         }
@@ -172,18 +266,28 @@
         /* ===================== RESPONSIVE ===================== */
         @media (max-width: 900px) {
             .split-layout { flex-direction: column; }
-            .content-panel { width: 100%; height: 55%; border-right: none; border-bottom: 1px solid var(--border-subtle); padding: clamp(1.5rem, 4vw, 3rem); }
+            .content-panel { 
+                width: 100%; height: 55%; margin: 0; border-radius: 0; 
+                border: none; border-bottom: 1px solid var(--border-subtle); 
+                padding: clamp(1.5rem, 4vw, 3rem); 
+                backdrop-filter: none; background: var(--bg-primary); 
+            }
             .visual-panel { width: 100%; height: 45%; }
+            .centered-layout { padding-left: var(--slide-padding); }
             .voxel-world { transform: scale(0.65) rotateX(-35deg) rotateY(45deg); }
             .grid-3 { grid-template-columns: 1fr; gap: 1rem; }
             .keyboard-hint { display: none; }
+            
+            /* Revertir progreso a horizontal en móviles */
+            .progress-track { top: 0; left: 0; width: 100%; height: 4px; transform: none; border-radius: 0; }
+            .progress-fill { width: 0%; height: 100%; border-radius: 0; }
+            .slide-counter { bottom: 1rem; left: auto; right: 1.2rem; transform: none; font-size: 0.9rem; }
         }
         @media (max-width: 600px) {
-            .content-panel { height: 60%; padding: 1.4rem 1.6rem; }
+            .content-panel { height: 60%; padding: 1.8rem; }
             .visual-panel { height: 40%; }
             .voxel-world { transform: scale(0.5) rotateX(-35deg) rotateY(45deg); }
             .grid-2 { grid-template-columns: 1fr; gap: 1rem; }
-            .slide-counter { bottom: 1rem; right: 1.2rem; }
         }
     </style>
 </head>
@@ -371,21 +475,21 @@
             <div class="grid-3 reveal">
                 <div class="card">
                     <h3>Adapter</h3>
-                    <p class="card-pro">+ Sin modificar código base</p>
-                    <p class="card-pro">+ Reutilización de legado</p>
-                    <p class="card-con">– Aumenta complejidad general</p>
+                    <p class="card-pro"><span>+</span> Sin modificar código base</p>
+                    <p class="card-pro"><span>+</span> Reutilización de legado</p>
+                    <p class="card-con"><span>–</span> Aumenta complejidad general</p>
                 </div>
                 <div class="card">
                     <h3>Builder</h3>
-                    <p class="card-pro">+ Construcción fluida y legible</p>
-                    <p class="card-pro">+ Previene inconsistencias</p>
-                    <p class="card-con">– Requiere múltiples clases</p>
+                    <p class="card-pro"><span>+</span> Construcción fluida y legible</p>
+                    <p class="card-pro"><span>+</span> Previene inconsistencias</p>
+                    <p class="card-con"><span>–</span> Requiere múltiples clases</p>
                 </div>
                 <div class="card">
                     <h3>Iterator</h3>
-                    <p class="card-pro">+ Traversal uniforme</p>
-                    <p class="card-pro">+ Abstrae la estructura interna</p>
-                    <p class="card-con">– Overhead vs. for-each nativo</p>
+                    <p class="card-pro"><span>+</span> Traversal uniforme</p>
+                    <p class="card-pro"><span>+</span> Abstrae la estructura interna</p>
+                    <p class="card-con"><span>–</span> Overhead vs. for-each nativo</p>
                 </div>
             </div>
         </div>
@@ -478,7 +582,6 @@
             var container = document.getElementById(containerId);
             if (!container) return;
             container.innerHTML = "";
-            // Painter's algorithm — ordena por profundidad
             voxels.sort(function(a, b) {
                 var dA = a.coords.x + a.coords.z - a.coords.y;
                 var dB = b.coords.x + b.coords.z - b.coords.y;
@@ -518,18 +621,17 @@
         /* ── 2. Adapter — Puente cayendo ── */
         function renderAdapterScene() {
             var voxels = [];
-            // Target (Izquierda — pizarra)
             voxels.push(createVoxel(-3,  0, 0, colors.slate));
             voxels.push(createVoxel(-3,  1, 0, colors.slate));
             voxels.push(createVoxel(-3, -1, 0, colors.slate));
             voxels.push(createVoxel(-2,  1, 0, colors.slate));
             voxels.push(createVoxel(-2, -1, 0, colors.slate));
-            // Adaptee (Derecha — óxido)
+            
             voxels.push(createVoxel(3,  0, 0, colors.rust));
             voxels.push(createVoxel(4,  0, 0, colors.rust));
             voxels.push(createVoxel(4,  1, 0, colors.rust));
             voxels.push(createVoxel(4, -1, 0, colors.rust));
-            // Puente Adapter (Arena) — empieza invisible arriba
+            
             for (var i = -2; i <= 2; i++) {
                 var v = createVoxel(i, 6, 0, colors.sand, "adapter-piece-" + i);
                 v.element.style.opacity = '0';
@@ -567,20 +669,17 @@
         }
 
         /* ── 3. Builder — Arco arquitectónico ── */
-        // Coordenadas Y desplazadas +0.5 para compensar la compresión
-        // visual de rotateX(-25deg) que hace que el arco aparezca más bajo.
         var builderPlan = [
-            [-2,-1.5,0],[-1,-1.5,0],[0,-1.5,0],[1,-1.5,0],[2,-1.5,0], // Base
-            [-2,-0.5,0],[-2,0.5,0],[-2,1.5,0],                        // Pilar Izq
-            [ 2,-0.5,0],[ 2,0.5,0],[ 2,1.5,0],                        // Pilar Der
-            [-2, 2.5,0],[-1,2.5,0],[0,2.5,0],[1,2.5,0],[2,2.5,0]      // Techo
+            [-2,-1.5,0],[-1,-1.5,0],[0,-1.5,0],[1,-1.5,0],[2,-1.5,0],
+            [-2,-0.5,0],[-2,0.5,0],[-2,1.5,0],                       
+            [ 2,-0.5,0],[ 2,0.5,0],[ 2,1.5,0],                       
+            [-2, 2.5,0],[-1,2.5,0],[0,2.5,0],[1,2.5,0],[2,2.5,0]     
         ];
 
         function renderBuilderScene() {
             var voxels = [];
             for (var i = 0; i < builderPlan.length; i++) {
                 var pos = builderPlan[i];
-                // Piezas empiezan 6 unidades arriba durante la animación
                 var v = createVoxel(pos[0], pos[1] + 6, pos[2], colors.sage, "build-piece-" + i);
                 v.element.setAttribute('data-target-y', pos[1]);
                 v.element.style.setProperty('--s', '0');
@@ -600,7 +699,6 @@
             pieces.forEach(function (el) {
                 el.style.transition = 'none';
                 el.style.setProperty('--s', '0');
-                // Restaurar posición inicial: target-y + 6 unidades arriba
                 var ty = parseFloat(el.getAttribute('data-target-y') || el.getAttribute('data-y'));
                 el.style.setProperty('--y', ty + 6);
             });
@@ -645,7 +743,7 @@
             cursor.style.transition = 'none';
             cursor.style.setProperty('--x', pathCoords[0][0]);
             cursor.style.setProperty('--z', pathCoords[0][2]);
-            void cursor.offsetWidth; // Force reflow
+            void cursor.offsetWidth; 
             cursor.style.transition = 'transform 0.6s var(--ease-expo)';
 
             var iterInterval = setInterval(function () {
@@ -689,9 +787,29 @@
         function updateUI(index) {
             currentIndex = index;
             var pct = ((index + 1) / total) * 100;
-            if (progressFill) progressFill.style.width = pct + "%";
-            if (counterEl)    counterEl.textContent = (index + 1) + " / " + total;
+            
+            // Lógica responsiva para la barra de progreso
+            if (window.innerWidth <= 900) {
+                if (progressFill) {
+                    progressFill.style.height = "100%";
+                    progressFill.style.width = pct + "%";
+                }
+            } else {
+                if (progressFill) {
+                    progressFill.style.width = "100%";
+                    progressFill.style.height = pct + "%";
+                }
+            }
+            
+            if (counterEl) {
+                var totalPadded = total < 10 ? "0" + total : total;
+                var currentPadded = (index + 1) < 10 ? "0" + (index + 1) : (index + 1);
+                counterEl.textContent = currentPadded + " / " + totalPadded;
+            }
         }
+
+        // Actualizar UI si cambia el tamaño de la ventana (para orientar la barra)
+        window.addEventListener('resize', function() { updateUI(currentIndex); });
 
         var observer = new IntersectionObserver(function (entries) {
             entries.forEach(function (entry) {
