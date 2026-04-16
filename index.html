@@ -163,13 +163,24 @@
         .code-block::before { content: ""; position: absolute; top: 15px; left: 17px; width: 9px; height: 9px; border-radius: 50%; background: #4a453f; box-shadow: 15px 0 0 #4a453f, 30px 0 0 #4a453f; }
         .tk { color: #d19a66; } .tc { color: #56b6c2; } .ts { color: #98c379; } .tcm { color: #7f848e; font-style: italic; } .tn { color: #e5c07b; }
 
-        /* ===================== NUEVO: TERMINAL Y RUN BUTTON ===================== */
+        /* ===================== TERMINAL Y RUN BUTTON (EDITABLE) ===================== */
         .code-terminal-wrapper {
             display: flex; gap: clamp(1rem, 2vw, 2rem); align-items: stretch; width: 100%;
         }
         .code-editor-container {
             flex: 1.2; position: relative; display: flex; flex-direction: column;
         }
+        
+        /* Estilos para que el editor sea interactuable sin perder el look original */
+        #adapter-editor {
+            outline: none; caret-color: var(--voxel-sage);
+            transition: box-shadow 0.3s ease, background 0.3s ease;
+        }
+        #adapter-editor:focus {
+            box-shadow: 0 0 0 1px rgba(115, 131, 95, 0.4), 0 20px 40px rgba(0,0,0,0.12);
+            background: #1b1916;
+        }
+
         .run-btn {
             position: absolute; top: 12px; right: 15px;
             background: rgba(115, 131, 95, 0.15); border: 1px solid var(--voxel-sage);
@@ -276,6 +287,7 @@
             transform: translate3d(calc(var(--x) * 40px), calc(var(--y) * -40px), calc(var(--z) * 40px)) scale3d(var(--s, 1), var(--s, 1), var(--s, 1));
             transition: transform 0.6s var(--ease-expo), opacity 0.4s;
         }
+        /* CORRECCIÓN: Espacio crucial entre .voxel y [class^="f-"] restaurado */
         .voxel [class^="f-"] {
             position: absolute; width: 41px; height: 41px; margin: -0.5px;
             backface-visibility: hidden;
@@ -380,12 +392,13 @@
     <!-- ===================== SLIDE 4: ADAPTER CÓDIGO (INTERACTIVO) ===================== -->
     <section class="slide" id="slide-4">
         <div class="centered-layout">
-            <p class="slide-label reveal">01 / Adapter — Implementación Executable</p>
+            <p class="slide-label reveal">01 / Adapter — Implementación Ejecutable</p>
             <div class="code-terminal-wrapper reveal">
                 <!-- Editor Panel -->
                 <div class="code-editor-container">
                     <button class="run-btn" id="run-adapter-btn">▶ Run Code</button>
-                    <div class="code-block" style="padding-top: 2.8rem;">
+                    <!-- contenteditable y spellcheck false para editar en vivo -->
+                    <div class="code-block" id="adapter-editor" contenteditable="true" spellcheck="false" style="padding-top: 2.8rem;">
 <span class="tk">interface</span> <span class="tc">Reproductor</span> { <span class="tk">void</span> <span class="tn">play</span>(String archivo); }
 
 <span class="tcm">// Clase legado incompatible</span>
@@ -660,13 +673,14 @@
         window.onclick = function(event) { if (event.target == modalOverlay) closePortal(); };
 
         /* ============================================================
-           SIMULADOR DE TERMINAL EJECUTABLE (Adapter)
+           SIMULADOR DE COMPILADOR/TERMINAL EJECUTABLE (Adapter)
            ============================================================ */
         const runBtn = document.getElementById('run-adapter-btn');
         const termOutput = document.getElementById('term-adapter');
+        const editor = document.getElementById('adapter-editor');
         let isRunning = false;
 
-        if(runBtn && termOutput) {
+        if(runBtn && termOutput && editor) {
             runBtn.addEventListener('click', function() {
                 if(isRunning) return;
                 isRunning = true;
@@ -674,24 +688,55 @@
                 runBtn.innerHTML = '⏳ Compilando...';
                 runBtn.style.opacity = '0.7';
                 
-                // Clear and start simulation
+                // Extraer el texto "puro"
+                const rawCode = editor.innerText.replace(/\u00A0/g, ' ');
+
                 termOutput.innerHTML = '<div><span class="tc">$</span> javac Main.java</div>';
                 
-                // Step 2: Run
                 setTimeout(() => {
-                    termOutput.innerHTML += '<div><span class="tc">$</span> java Main</div>';
+                    let outputResult = "";
+
+                    if (!rawCode.includes("class Main")) {
+                        outputResult = '<span style="color: #e56d56; margin: 0.8rem 0; display: block;">Error: No se encontró la clase Main</span>';
+                    } else if (!rawCode.includes("public static void main")) {
+                        outputResult = '<span style="color: #e56d56; margin: 0.8rem 0; display: block;">Error: No se encontró el método main(String[] args)</span>';
+                    } else {
+                        termOutput.innerHTML += '<div><span class="tc">$</span> java Main</div>';
+                        
+                        let prefix = "Play: ";
+                        let printMatch = rawCode.match(/System\.out\.println\(\s*"([^"]*)"\s*\+\s*[a-zA-Z0-9_]+\s*\)/);
+                        let printMatchSolo = rawCode.match(/System\.out\.println\(\s*"([^"]*)"\s*\)/);
+                        
+                        if (printMatch) { prefix = printMatch[1]; } 
+                        else if (printMatchSolo) { prefix = printMatchSolo[1]; }
+
+                        let arg = "tutorial.mp4";
+                        let playMatch = rawCode.match(/\.play\(\s*"([^"]*)"\s*\)/);
+                        if (playMatch) { arg = playMatch[1]; }
+
+                        if (printMatch) {
+                            outputResult = `<div style="color: #98c379; font-weight: 500; margin: 0.8rem 0; font-size: 1.1em;">&gt; ${prefix}${arg}</div>`;
+                        } else if (printMatchSolo) {
+                            outputResult = `<div style="color: #98c379; font-weight: 500; margin: 0.8rem 0; font-size: 1.1em;">&gt; ${prefix}</div>`;
+                        } else {
+                            outputResult = `<div style="color: #98c379; margin: 0.8rem 0;">&gt; Proceso finalizado sin salida de impresión.</div>`;
+                        }
+                    }
+
                     runBtn.innerHTML = '⚙️ Ejecutando...';
+
+                    setTimeout(() => {
+                        termOutput.innerHTML += outputResult;
+                        termOutput.innerHTML += '<div><span class="tc">$</span> <span class="blink">_</span></div>';
+                        
+                        runBtn.innerHTML = '▶ Re-Run Code';
+                        runBtn.style.opacity = '1';
+                        
+                        termOutput.scrollTop = termOutput.scrollHeight;
+                        isRunning = false;
+                    }, 800);
+
                 }, 700);
-                
-                // Step 3: Print Output
-                setTimeout(() => {
-                    termOutput.innerHTML += '<div style="color: #98c379; font-weight: 500; margin: 0.8rem 0; font-size: 1.1em;">&gt; Play: tutorial.mp4</div>';
-                    termOutput.innerHTML += '<div><span class="tc">$</span> <span class="blink">_</span></div>';
-                    
-                    runBtn.innerHTML = '▶ Re-Run Code';
-                    runBtn.style.opacity = '1';
-                    isRunning = false;
-                }, 1600);
             });
         }
 
@@ -768,7 +813,7 @@
                     voxels.push(createVoxel(x, 2, z, colors.slate));
                 }
             }
-            var pilares = [[-1,-1], [-1,1], [1,-1], [1,1]];
+            var pilares = [[-1,-1], [-1,1],[1,-1],[1,1]];
             pilares.forEach(function(p) {
                 voxels.push(createVoxel(p[0], 1, p[1], colors.sand));
                 voxels.push(createVoxel(p[0], 0, p[1], colors.sand));
@@ -971,7 +1016,9 @@
         if (slides.length > 0) { slides[0].classList.add("visible"); updateUI(0); }
 
         document.addEventListener("keydown", function (e) {
-            var fwd = ["ArrowDown", "ArrowRight", " ", "PageDown"];
+            if(document.activeElement === editor) return; 
+            
+            var fwd =["ArrowDown", "ArrowRight", " ", "PageDown"];
             var bck =["ArrowUp",   "ArrowLeft",       "PageUp"];
             if (fwd.indexOf(e.key) !== -1) {
                 e.preventDefault();
