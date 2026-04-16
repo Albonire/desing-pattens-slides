@@ -2,696 +2,734 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patrones de Diseño | Edición Académica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Patrones de Diseño | Presentación Académica</title>
 
-    <!-- Tipografía Editorial (Claude-like) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
 
     <style>
-        /* ===========================================
-           TEMA CLARO EDITORIAL (PAPER-LIKE)
-           =========================================== */
+        /* =================================================================
+           TEMA CLARO PERMANENTE Y TIPOGRAFÍA
+           ================================================================= */
         :root {
-            /* Superficies Mate Claro */
-            --bg-primary: #fdfcfb;     /* Papel hueso */
-            --bg-secondary: #f5f4f2;   /* Gris piedra muy claro */
-            --bg-tertiary: #eeebe8;
-            --text-primary: #1c1b1a;   /* Carbón profundo */
-            --text-secondary: #5a5856; /* Gris medio */
+            --bg-primary:    #fdfcfb;
+            --bg-secondary:  #f5f4f2;
+            --bg-tertiary:   #eceae6;
+            --text-primary:  #1c1b1a;
+            --text-secondary:#4a4846;
             --border-subtle: rgba(0, 0, 0, 0.08);
-            
-            /* Colores de Vóxeles (Ajustados para contraste en fondo claro) */
-            --voxel-slate: #4a6672;    
-            --voxel-rust: #8a5a4a;     
-            --voxel-sand: #b4a89a;     
-            --voxel-sage: #5b6a52;     
-            --voxel-gold: #c49363;     
-            --voxel-dark: #2a2826;     
+
+            /* PALETA DE COLORES 3D MEJORADA Y ARMONIZADA */
+            --voxel-slate: #5b7c8a; /* Azul Pizarra Suave */
+            --voxel-rust:  #bd6b58; /* Terracota / Óxido */
+            --voxel-sand:  #d6c4b3; /* Arena / Beige */
+            --voxel-sage:  #7b946e; /* Verde Salvia (Builder) */
+            --voxel-gold:  #e09f5b; /* Naranja Dorado (Cursor Iterator) */
+            --voxel-dark:  #75706b; /* Gris Piedra Cálido (Camino Iterator) */
 
             --font-display: 'Newsreader', serif;
-            --font-body: 'Source Sans 3', sans-serif;
-            --font-mono: 'Fira Code', monospace;
+            --font-body:    'Source Sans 3', sans-serif;
+            --font-mono:    'Fira Code', monospace;
 
-            --title-size: clamp(2rem, 5vw, 4rem);
-            --h2-size: clamp(1.75rem, 4vw, 2.5rem);
-            --h3-size: clamp(1.2rem, 2.5vw, 1.5rem);
-            --body-size: clamp(0.95rem, 1.2vw, 1.1rem);
-            --small-size: clamp(0.75rem, 0.9vw, 0.85rem);
+            --title-size: clamp(2.4rem, 6vw, 4.5rem);
+            --h2-size:    clamp(1.8rem, 4vw, 3rem);
+            --h3-size:    clamp(1.2rem, 2.5vw, 1.6rem);
+            --body-size:  clamp(0.95rem, 1.4vw, 1.1rem);
+            --small-size: clamp(0.78rem, 0.95vw, 0.9rem);
 
-            --slide-padding: clamp(1.5rem, 5vw, 5rem);
-            --content-gap: clamp(1rem, 3vw, 2rem);
+            --slide-padding: clamp(2.5rem, 6vw, 5.5rem);
+            --content-gap:   clamp(1rem, 2.5vw, 2rem);
 
-            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-            --duration-normal: 0.8s;
+            --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --dur: 0.75s;
         }
 
-        /* ===========================================
-           VIEWPORT & RESET
-           =========================================== */
-        html, body {
-            height: 100%;
-            overflow: hidden; /* Evitamos scroll manual para forzar navegación */
-            background-color: var(--bg-primary);
-            color: var(--text-primary);
-            font-family: var(--font-body);
-            line-height: 1.6;
-        }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; overflow-x: hidden; height: 100%; }
+        body { min-height: 100%; background-color: var(--bg-primary); color: var(--text-primary); font-family: var(--font-body); line-height: 1.6; }
 
+        /* ===================== SLIDE BASE ===================== */
         .slide {
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            display: flex;
-            position: absolute;
-            top: 0; left: 0;
-            transition: transform 0.8s var(--ease-out-expo), opacity 0.8s;
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(20px);
+            width: 100vw; height: 100vh; height: 100dvh;
+            overflow: hidden; scroll-snap-align: start;
+            display: flex; position: relative;
         }
 
-        .slide.active {
-            opacity: 1;
-            pointer-events: all;
-            transform: translateY(0);
-            z-index: 10;
-        }
-
-        /* ===========================================
-           ELEMENTOS DE NAVEGACIÓN VISUAL
-           =========================================== */
-        .progress-bar-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%;
-            height: 4px;
-            background: var(--bg-secondary);
-            z-index: 1000;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--voxel-slate);
-            width: 0%;
-            transition: width 0.5s var(--ease-out-expo);
-        }
-
-        .slide-counter {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            font-family: var(--font-mono);
-            font-size: var(--small-size);
-            color: var(--text-secondary);
-            z-index: 1000;
-            letter-spacing: 0.1em;
-        }
+        /* ===================== NAVIGATION UI ===================== */
+        .progress-track { position: fixed; top: 0; left: 0; width: 100%; height: 4px; background: var(--bg-tertiary); z-index: 200; }
+        .progress-fill { height: 100%; background: var(--voxel-slate); width: 0%; transition: width 0.5s var(--ease-expo); }
+        .slide-counter { position: fixed; bottom: 1.8rem; right: 2.2rem; font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); opacity: 0.6; z-index: 200; letter-spacing: 0.06em; user-select: none; }
 
         /* Zonas de Click Invisibles */
         .nav-zone {
-            position: fixed;
-            top: 0;
-            width: 30%;
-            height: 100%;
-            z-index: 2000;
-            cursor: pointer;
-            outline: none;
+            position: fixed; top: 0; width: 30%; height: 100%;
+            z-index: 100; cursor: pointer; outline: none;
         }
-        .zone-left { left: 0; }
+        .zone-left  { left: 0; }
         .zone-right { right: 0; }
 
-        /* ===========================================
-           LAYOUTS RESPONSIVOS
-           =========================================== */
-        .split-layout {
-            display: flex;
-            width: 100%;
-            height: 100%;
-        }
-
+        /* ===================== LAYOUTS ===================== */
+        .split-layout { display: flex; width: 100%; height: 100%; }
+        
         .content-panel {
-            width: 45%;
-            padding: var(--slide-padding);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            width: 45%; padding: var(--slide-padding);
+            display: flex; flex-direction: column; justify-content: center;
             border-right: 1px solid var(--border-subtle);
-            z-index: 10;
-            background-color: var(--bg-primary);
+            background: rgba(253, 252, 251, 0.94); backdrop-filter: blur(6px);
+            position: relative; z-index: 10; overflow: hidden;
         }
 
         .visual-panel {
-            width: 55%;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background-image: 
+            flex: 1; position: relative; display: flex; align-items: center; justify-content: center;
+            /* REJILLA CUADRICULAR */
+            background-image:
                 linear-gradient(rgba(0,0,0,0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0,0,0,0.03) 1px, transparent 1px);
-            background-size: 40px 40px;
+            background-size: 50px 50px;
+            overflow: hidden;
         }
 
-        .centered-layout {
-            width: 100%;
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: var(--slide-padding);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
+        .centered-layout { width: 100%; max-width: 1100px; margin: 0 auto; padding: var(--slide-padding); display: flex; flex-direction: column; justify-content: center; height: 100%; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1.2rem, 3.5vw, 2.5rem); margin-top: var(--content-gap); }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2.5vw, 2rem); margin-top: var(--content-gap); }
 
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--slide-padding);
-            margin-top: var(--content-gap);
-        }
+        /* ===================== TYPOGRAPHY ===================== */
+        h1, h2, h3 { font-family: var(--font-display); font-weight: 500; letter-spacing: -0.025em; line-height: 1.1; color: var(--text-primary); margin-bottom: var(--content-gap); }
+        h1 { font-size: var(--title-size); } h2 { font-size: var(--h2-size); } h3 { font-size: var(--h3-size); margin-bottom: 0.7rem; }
+        p, li { font-size: var(--body-size); color: var(--text-secondary); margin-bottom: calc(var(--content-gap) * 0.55); max-width: 58ch; }
+        ul { margin-left: 1.4rem; margin-bottom: var(--content-gap); } li { margin-bottom: 0.35rem; }
+        strong { color: var(--text-primary); font-weight: 600; }
 
-        h1, h2, h3 {
-            font-family: var(--font-display);
-            font-weight: 500;
-            letter-spacing: -0.02em;
-            line-height: 1.1;
-            margin-bottom: var(--content-gap);
-        }
-        h1 { font-size: var(--title-size); }
-        h2 { font-size: var(--h2-size); }
-        h3 { font-size: var(--h3-size); margin-bottom: 1rem; color: var(--text-primary); }
+        .slide-label { font-family: var(--font-mono); font-size: var(--small-size); color: var(--voxel-slate); letter-spacing: 0.06em; margin-bottom: 0.5rem; opacity: 0.75; }
+        .highlight-text { font-family: var(--font-mono); font-size: 0.88em; color: var(--voxel-slate); border-left: 2px solid var(--voxel-slate); padding: 0.5rem 1rem; background: var(--bg-secondary); margin-top: 0.8rem; font-style: italic; }
+
+        .authors { margin-top: auto; padding-top: var(--content-gap); border-top: 1px solid var(--border-subtle); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); }
+        .authors span { display: block; color: var(--text-primary); font-weight: 500; margin-top: 0.25rem; }
+        .keyboard-hint { position: absolute; bottom: 1.8rem; left: 50%; transform: translateX(-50%); font-family: var(--font-mono); font-size: var(--small-size); color: var(--text-secondary); opacity: 0.5; white-space: nowrap; user-select: none; }
+
+        /* ===================== CODE BLOCKS & TABLES ===================== */
+        .code-block { font-family: var(--font-mono); font-size: var(--small-size); background: #1b1b1b; padding: 2rem 1.75rem 1.5rem; border-radius: 6px; color: #d4d4d4; white-space: pre; overflow-x: auto; box-shadow: 0 14px 38px rgba(0,0,0,0.16); line-height: 1.7; position: relative; }
+        .code-block::before { content: ""; position: absolute; top: 15px; left: 17px; width: 9px; height: 9px; border-radius: 50%; background: #484848; box-shadow: 15px 0 0 #484848, 30px 0 0 #484848; }
+        .tk { color: #c678dd; } .tc { color: #61afef; } .ts { color: #98c379; } .tcm { color: #5c6370; font-style: italic; } .tn { color: #e5c07b; }
+
+        .table-scroll { overflow-x: auto; margin-top: var(--content-gap); }
+        .comp-table { width: 100%; min-width: 600px; border-collapse: collapse; font-size: var(--small-size); }
+        .comp-table th { text-align: left; padding: 0.85rem 1.1rem; background: var(--bg-secondary); border-bottom: 2px solid var(--text-primary); font-family: var(--font-display); font-weight: 600; font-size: 0.92em; }
+        .comp-table td { padding: 0.8rem 1.1rem; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); vertical-align: top; }
+        .comp-table td:first-child { font-family: var(--font-mono); color: var(--voxel-slate); font-weight: 600; }
+        .comp-table tr:last-child td { border-bottom: none; }
+
+        .card { padding: clamp(1.2rem, 2.5vw, 2rem); background: var(--bg-secondary); border: 1px solid var(--border-subtle); border-radius: 4px; }
+        .card h3 { margin-bottom: 0.6rem; }
+        .card-pro { color: var(--voxel-sage); font-size: var(--small-size); margin-bottom: 0.2rem; font-family: var(--font-mono); }
+        .card-con { color: var(--voxel-rust); font-size: var(--small-size); margin-bottom: 0.2rem; font-family: var(--font-mono); }
+
+        /* ===================== REVEAL ANIMATIONS ===================== */
+        .reveal { opacity: 0; transform: translateY(16px); transition: opacity var(--dur) var(--ease-expo), transform var(--dur) var(--ease-expo); }
+        .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+        .slide.visible .reveal:nth-child(1) { transition-delay: 0.06s; }
+        .slide.visible .reveal:nth-child(2) { transition-delay: 0.14s; }
+        .slide.visible .reveal:nth-child(3) { transition-delay: 0.22s; }
+        .slide.visible .reveal:nth-child(4) { transition-delay: 0.30s; }
+        .slide.visible .reveal:nth-child(5) { transition-delay: 0.38s; }
+        .slide.visible .reveal:nth-child(6) { transition-delay: 0.46s; }
+
+        /* ===================== 3D VOXEL ENGINE (SIN GAPS) ===================== */
+        .scene-3d { perspective: 2400px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .voxel-world { position: relative; transform-style: preserve-3d; transform: rotateX(-35deg) rotateY(45deg); width: 0; height: 0; transition: transform 1.5s var(--ease-expo); }
         
-        p, li {
-            font-size: var(--body-size);
-            color: var(--text-secondary);
-            margin-bottom: calc(var(--content-gap) * 0.6);
-            max-width: 50ch;
-        }
-
-        .highlight-text { 
-            color: var(--voxel-slate); 
-            font-family: var(--font-mono); 
-            font-size: 0.9em; 
-            border-left: 2px solid var(--voxel-slate);
-            padding-left: 1rem;
-            margin-top: 1rem;
-        }
-
-        .code-block {
-            font-family: var(--font-mono);
-            font-size: var(--small-size);
-            background: var(--bg-secondary);
-            padding: 1.5rem;
-            border: 1px solid var(--border-subtle);
-            border-radius: 4px;
-            color: var(--text-secondary);
-            white-space: pre-wrap;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            line-height: 1.5;
-        }
-        .token-keyword { color: var(--voxel-rust); }
-        .token-class { color: var(--voxel-slate); }
-        .token-string { color: var(--voxel-sage); }
-        .token-comment { color: #999; font-style: italic; }
-
-        .authors {
-            margin-top: auto;
-            padding-top: var(--content-gap);
-            border-top: 1px solid var(--border-subtle);
-            font-family: var(--font-mono);
-            font-size: var(--small-size);
-            color: var(--text-secondary);
-        }
-        .authors span { display: block; color: var(--text-primary); }
-
-        /* ===========================================
-           ANIMACIONES & 3D
-           =========================================== */
-        .reveal {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity var(--duration-normal) var(--ease-out-expo),
-                        transform var(--duration-normal) var(--ease-out-expo);
-        }
-        .slide.active .reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .reveal:nth-child(1) { transition-delay: 0.1s; }
-        .reveal:nth-child(2) { transition-delay: 0.2s; }
-        .reveal:nth-child(3) { transition-delay: 0.3s; }
-        .reveal:nth-child(4) { transition-delay: 0.4s; }
-
-        .scene-3d {
-            perspective: 2500px;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .voxel-world {
-            position: relative;
-            transform-style: preserve-3d;
-            transform: rotateX(-35deg) rotateY(45deg);
-            transition: transform 1.5s var(--ease-out-expo);
-            width: 0; height: 0;
-        }
-
         .voxel {
-            position: absolute;
-            width: 40px;
-            height: 40px;
+            position: absolute; width: 40px; height: 40px; left: -20px; top: -20px;
             transform-style: preserve-3d;
-            left: -20px; 
-            top: -20px;
-            transform: translate3d(
-                calc(var(--x) * 40px),
-                calc(var(--y) * -40px),
-                calc(var(--z) * 40px)
-            ) scale3d(var(--s, 1), var(--s, 1), var(--s, 1));
+            transform: translate3d(calc(var(--x) * 40px), calc(var(--y) * -40px), calc(var(--z) * 40px)) scale3d(var(--s, 1), var(--s, 1), var(--s, 1));
+            transition: transform 0.6s var(--ease-expo), opacity 0.4s;
         }
 
-        .voxel .face {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 1px solid rgba(0,0,0,0.05); 
-            backface-visibility: visible;
+        /* 
+           Corrección de huecos entre caras:
+           1px extra de tamaño + -0.5px margin fuerzan un solapamiento perfecto.
+           border reemplazado por box-shadow interno suave.
+        */
+        .voxel [class^="f-"] {
+            position: absolute; 
+            width: 41px; 
+            height: 41px;
+            margin: -0.5px;
+            backface-visibility: hidden;
+            box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.05);
         }
 
-        .voxel .front  { transform: translateZ(20px); background: var(--v-color); }
-        .voxel .back   { transform: translateZ(-20px) rotateY(180deg); background: color-mix(in srgb, var(--v-color) 60%, black); }
-        .voxel .right  { transform: translateX(20px) rotateY(90deg); background: color-mix(in srgb, var(--v-color) 80%, black); }
-        .voxel .left   { transform: translateX(-20px) rotateY(-90deg); background: color-mix(in srgb, var(--v-color) 90%, white); }
-        .voxel .top    { transform: translateY(-20px) rotateX(90deg); background: color-mix(in srgb, var(--v-color) 70%, white); }
-        .voxel .bottom { transform: translateY(20px) rotateX(-90deg); background: color-mix(in srgb, var(--v-color) 40%, black); }
+        .f-front  { transform: translateZ(20px);                  background: var(--v-color); }
+        .f-back   { transform: translateZ(-20px) rotateY(180deg); background: color-mix(in srgb, var(--v-color) 45%, black); }
+        .f-right  { transform: translateX(20px)  rotateY(90deg);  background: color-mix(in srgb, var(--v-color) 70%, black); }
+        .f-left   { transform: translateX(-20px) rotateY(-90deg); background: color-mix(in srgb, var(--v-color) 85%, white); }
+        .f-top    { transform: translateY(-20px) rotateX(90deg);  background: color-mix(in srgb, var(--v-color) 65%, white); }
+        .f-bottom { transform: translateY(20px)  rotateX(-90deg); background: color-mix(in srgb, var(--v-color) 25%, black); }
 
-        /* ===========================================
-           RESPONSIVIDAD EXTREMA (MÓVIL)
-           =========================================== */
+        /* ===================== RESPONSIVE ===================== */
         @media (max-width: 900px) {
             .split-layout { flex-direction: column; }
-            .content-panel { 
-                width: 100%; 
-                height: 45%; 
-                border-right: none; 
-                border-bottom: 1px solid var(--border-subtle); 
-                padding: 2rem;
-            }
-            .visual-panel { 
-                width: 100%; 
-                height: 55%; 
-                padding: 1rem;
-            }
-            .grid-2 { grid-template-columns: 1fr; gap: 2rem; }
-            
-            /* Escalamos el mundo 3D para que quepa en pantallas pequeñas */
-            .voxel-world {
-                transform: rotateX(-35deg) rotateY(45deg) scale(0.6);
-            }
-            
-            .nav-zone { width: 40%; } /* Zonas más grandes en móvil */
+            .content-panel { width: 100%; height: 55%; border-right: none; border-bottom: 1px solid var(--border-subtle); padding: clamp(1.5rem, 4vw, 3rem); }
+            .visual-panel { width: 100%; height: 45%; }
+            .voxel-world { transform: scale(0.65) rotateX(-35deg) rotateY(45deg); }
+            .grid-3 { grid-template-columns: 1fr; gap: 1rem; }
+            .keyboard-hint { display: none; }
+        }
+        @media (max-width: 600px) {
+            .content-panel { height: 60%; padding: 1.4rem 1.6rem; }
+            .visual-panel { height: 40%; }
+            .voxel-world { transform: scale(0.5) rotateX(-35deg) rotateY(45deg); }
+            .grid-2 { grid-template-columns: 1fr; gap: 1rem; }
+            .slide-counter { bottom: 1rem; right: 1.2rem; }
         }
     </style>
 </head>
 <body>
 
-    <!-- GUI DE NAVEGACIÓN -->
-    <div class="progress-bar-container">
-        <div class="progress-bar-fill" id="progressFill"></div>
-    </div>
-    <div class="slide-counter" id="slideCounter">01 / 09</div>
-    <div class="nav-zone zone-left" onclick="presentation.goToPrevSlide()"></div>
-    <div class="nav-zone zone-right" onclick="presentation.goToNextSlide()"></div>
+    <!-- BARRA DE PROGRESO -->
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="slide-counter" id="slide-counter">1 / 11</div>
 
-    <!-- SLIDE 1: TITLE -->
-    <section class="slide active" id="slide-title">
+    <!-- CONTROLES DE CLICK -->
+    <div class="nav-zone zone-left" id="navLeft"></div>
+    <div class="nav-zone zone-right" id="navRight"></div>
+
+    <!-- ===================== SLIDE 1: TÍTULO ===================== -->
+    <section class="slide" id="slide-1">
         <div class="split-layout">
             <div class="content-panel">
                 <h1 class="reveal">Patrones<br>de Diseño</h1>
-                <p class="reveal">Una exploración estructural interactiva de arquitecturas de software: Adapter, Builder e Iterator.</p>
+                <p class="reveal">Una exploración estructural de arquitecturas de software: <strong>Adapter</strong>, <strong>Builder</strong> e <strong>Iterator</strong> con análisis de trade-offs GoF.</p>
                 <div class="authors reveal">
                     Presentado por:
-                    <span>Iván Piñeres & Anderson Gonzalez</span>
+                    <span>Anderson González</span>
+                    <span>Iván Piñeres</span>
+                    <span>Ingeniería de Sistemas</span>
                 </div>
             </div>
-            <div class="visual-panel">
-                <div class="scene-3d">
-                    <div class="voxel-world" id="world-title"></div>
-                </div>
+            <div class="visual-panel"><div class="scene-3d"><div class="voxel-world" id="world-title"></div></div></div>
+        </div>
+        <div class="keyboard-hint">↑ ↓ para navegar · espacio para avanzar</div>
+    </section>
+
+    <!-- ===================== SLIDE 2: ADAPTER CONCEPTO ===================== -->
+    <section class="slide" id="slide-2">
+        <div class="split-layout">
+            <div class="content-panel">
+                <p class="slide-label reveal">01 / Adapter</p>
+                <h2 class="reveal">El Patrón<br>Adapter</h2>
+                <p class="reveal">Permite que objetos con <strong>interfaces incompatibles</strong> colaboren entre sí. Convierte la interfaz de una clase en otra que el cliente espera.</p>
+                <ul class="reveal">
+                    <li>Envuelve un objeto para ocultar su interfaz</li>
+                    <li>Reutiliza código existente sin modificarlo</li>
+                    <li>También conocido como <strong>Wrapper</strong></li>
+                </ul>
+                <div class="highlight-text reveal">Patrón Estructural — GoF (1994)</div>
             </div>
+            <div class="visual-panel"><div class="scene-3d"><div class="voxel-world" id="world-adapter"></div></div></div>
         </div>
     </section>
 
-    <!-- SLIDE 2: INTRO -->
-    <section class="slide" id="slide-intro">
+    <!-- ===================== SLIDE 3: ADAPTER CÓDIGO ===================== -->
+    <section class="slide" id="slide-3">
         <div class="centered-layout">
-            <h2 class="reveal">Fundamentos de Diseño</h2>
-            <div class="grid-2">
-                <div class="reveal">
-                    <h3>Abstracción Comprobada</h3>
-                    <p>Los patrones de diseño son soluciones conceptuales probadas a problemas recurrentes en el software orientado a objetos.</p>
-                </div>
-                <div class="reveal">
-                    <h3>Vocabulario Común</h3>
-                    <p>Permiten que el equipo técnico se comunique mediante conceptos arquitectónicos estandarizados, reduciendo la ambigüedad.</p>
-                </div>
-            </div>
-        </div>
-    </section>
+            <p class="slide-label reveal">01 / Adapter — Implementación Java</p>
+            <div class="code-block reveal"><span class="tcm">// Interfaz esperada por el cliente</span>
+<span class="tk">interface</span> <span class="tc">Reproductor</span> { <span class="tk">void</span> <span class="tn">play</span>(String archivo); }
 
-    <!-- SLIDE 3: ADAPTER CONCEPT -->
-    <section class="slide" id="slide-adapter-concept">
-        <div class="centered-layout">
-            <h2 class="reveal">1. Adapter Pattern</h2>
-            <div class="grid-2">
-                <div class="reveal">
-                    <p><strong>Estructural:</strong> Actúa como un envoltorio (wrapper). Permite que objetos con interfaces incompatibles colaboren.</p>
-                    <p>Ideal para integrar APIs de terceros o sistemas heredados sin alterar el código fuente original.</p>
-                </div>
-                <div class="code-block reveal">
-<span class="token-comment">// Interface Target</span>
-<span class="token-keyword">interface</span> <span class="token-class">Target</span> { request(): string; }
+<span class="tcm">// Clase existente — interfaz incompatible</span>
+<span class="tk">class</span> <span class="tc">ReproductorLegado</span> {
+    <span class="tk">public void</span> <span class="tn">reproducirMP4</span>(String ruta) { System.out.println(<span class="ts">"Play: "</span> + ruta); }
+}
 
-<span class="token-comment">// Bridge Implementation</span>
-<span class="token-keyword">class</span> <span class="token-class">Adapter</span> <span class="token-keyword">implements</span> Target {
-  <span class="token-keyword">constructor</span>(private adaptee: Adaptee) {}
-  request() { 
-    <span class="token-keyword">return</span> this.adaptee.specificRequest(); 
-  }
+<span class="tcm">// Adaptador: envuelve lo incompatible, expone lo esperado</span>
+<span class="tk">class</span> <span class="tc">AdaptadorMP4</span> <span class="tk">implements</span> <span class="tc">Reproductor</span> {
+    <span class="tk">private final</span> <span class="tc">ReproductorLegado</span> adaptado;
+    <span class="tc">AdaptadorMP4</span>(<span class="tc">ReproductorLegado</span> r) { <span class="tk">this</span>.adaptado = r; }
+
+    @Override
+    <span class="tk">public void</span> <span class="tn">play</span>(String archivo) { adaptado.reproducirMP4(archivo); }
 }</div>
-            </div>
         </div>
     </section>
 
-    <!-- SLIDE 4: ADAPTER DEMO -->
-    <section class="slide" id="slide-adapter-demo">
+    <!-- ===================== SLIDE 4: BUILDER CONCEPTO ===================== -->
+    <section class="slide" id="slide-4">
         <div class="split-layout">
             <div class="content-panel">
-                <h3 class="reveal">Visualización: Adapter</h3>
-                <p class="reveal">El <strong>Target</strong> (Pizarra) y el <strong>Adaptee</strong> (Óxido) tienen interfaces incompatibles.</p>
-                <p class="reveal highlight-text">[ Ciclo Continuo ]<br>El componente Adapter (Arena) desciende cíclicamente para reconciliar la diferencia geométrica entre ambos sistemas.</p>
+                <p class="slide-label reveal">02 / Builder</p>
+                <h2 class="reveal">El Patrón<br>Builder</h2>
+                <p class="reveal">Separa la <strong>construcción de un objeto complejo</strong> de su representación final. Permite crear diferentes representaciones con el mismo proceso.</p>
+                <ul class="reveal">
+                    <li>Construye el objeto paso a paso con interfaz fluida</li>
+                    <li>El <em>Director</em> orquesta la construcción</li>
+                    <li>Elimina constructores con demasiados parámetros</li>
+                </ul>
+                <div class="highlight-text reveal">Patrón Creacional — GoF (1994)</div>
             </div>
-            <div class="visual-panel">
-                <div class="scene-3d">
-                    <div class="voxel-world" id="world-adapter" style="transform: rotateX(-20deg) rotateY(30deg);"></div>
-                </div>
-            </div>
+            <div class="visual-panel"><div class="scene-3d"><div class="voxel-world" id="world-builder"></div></div></div>
         </div>
     </section>
 
-    <!-- SLIDE 5: BUILDER CONCEPT -->
-    <section class="slide" id="slide-builder-concept">
+    <!-- ===================== SLIDE 5: BUILDER CÓDIGO ===================== -->
+    <section class="slide" id="slide-5">
         <div class="centered-layout">
-            <h2 class="reveal">2. Builder Pattern</h2>
-            <div class="grid-2">
-                <div class="reveal">
-                    <p><strong>Creacional:</strong> Separa la construcción de un objeto complejo de su representación final.</p>
-                    <p>Evita constructores con demasiados parámetros, delegando la creación paso a paso a un objeto Builder.</p>
-                </div>
-                <div class="code-block reveal">
-<span class="token-comment">// Fluent Interface</span>
-<span class="token-keyword">const</span> house = <span class="token-keyword">new</span> <span class="token-class">HouseBuilder</span>()
-  .buildWalls(<span class="token-keyword">4</span>)
-  .buildRoof(<span class="token-string">"Gable"</span>)
-  .hasGarage(<span class="token-keyword">true</span>)
-  .getResult();</div>
-            </div>
+            <p class="slide-label reveal">02 / Builder — Implementación Java</p>
+            <div class="code-block reveal"><span class="tk">class</span> <span class="tc">Reporte</span> {
+    String titulo, cuerpo;
+
+    <span class="tk">static class</span> <span class="tc">Constructor</span> {
+        <span class="tk">private final</span> <span class="tc">Reporte</span> r = <span class="tk">new</span> <span class="tc">Reporte</span>();
+
+        <span class="tc">Constructor</span> <span class="tn">titulo</span>(String t)  { r.titulo = t; <span class="tk">return this</span>; }
+        <span class="tc">Constructor</span> <span class="tn">cuerpo</span>(String c)  { r.cuerpo = c; <span class="tk">return this</span>; }
+
+        <span class="tc">Reporte</span> <span class="tn">build</span>() {
+            <span class="tk">if</span> (r.titulo == <span class="tk">null</span>) <span class="tk">throw new</span> <span class="tc">IllegalStateException</span>(<span class="ts">"Falta título"</span>);
+            <span class="tk">return</span> r;
+        }
+    }
+}
+
+<span class="tcm">// Uso — interfaz fluida</span>
+<span class="tc">Reporte</span> informe = <span class="tk">new</span> <span class="tc">Reporte.Constructor</span>().titulo(<span class="ts">"Q3"</span>).cuerpo(<span class="ts">"Datos"</span>).build();</div>
         </div>
     </section>
 
-    <!-- SLIDE 6: BUILDER DEMO -->
-    <section class="slide" id="slide-builder-demo">
+    <!-- ===================== SLIDE 6: ITERATOR CONCEPTO ===================== -->
+    <section class="slide" id="slide-6">
         <div class="split-layout">
             <div class="content-panel">
-                <h3 class="reveal">Visualización: Builder</h3>
-                <p class="reveal">El Director ordena la secuencia: Base $\rightarrow$ Columnas $\rightarrow$ Techo.</p>
-                <p class="reveal highlight-text">[ Ciclo Continuo ]<br>Auto-construcción sistemática. La complejidad de ensamblaje queda oculta tras una interfaz de construcción simple.</p>
+                <p class="slide-label reveal">03 / Iterator</p>
+                <h2 class="reveal">El Patrón<br>Iterator</h2>
+                <p class="reveal">Proporciona una forma de <strong>acceder secuencialmente</strong> a los elementos de una colección sin exponer su representación interna.</p>
+                <ul class="reveal">
+                    <li>Abstrae la estructura interna de la colección</li>
+                    <li>Mismo código de traversal para distintas colecciones</li>
+                    <li>Base del patrón for-each moderno</li>
+                </ul>
+                <div class="highlight-text reveal">Patrón de Comportamiento — GoF (1994)</div>
             </div>
-            <div class="visual-panel">
-                <div class="scene-3d">
-                    <div class="voxel-world" id="world-builder" style="transform: rotateX(-25deg) rotateY(-35deg);"></div>
-                </div>
-            </div>
+            <div class="visual-panel"><div class="scene-3d"><div class="voxel-world" id="world-iterator"></div></div></div>
         </div>
     </section>
 
-    <!-- SLIDE 7: ITERATOR CONCEPT -->
-    <section class="slide" id="slide-iterator-concept">
+    <!-- ===================== SLIDE 7: ITERATOR CÓDIGO ===================== -->
+    <section class="slide" id="slide-7">
         <div class="centered-layout">
-            <h2 class="reveal">3. Iterator Pattern</h2>
-            <div class="grid-2">
-                <div class="reveal">
-                    <p><strong>Comportamiento:</strong> Acceso secuencial a elementos de una colección sin exponer su estructura interna.</p>
-                    <p>Permite recorrer árboles, grafos o listas usando la misma interfaz: <code>next()</code> y <code>current()</code>.</p>
-                </div>
-                <div class="code-block reveal">
-<span class="token-comment">// Universal Access</span>
-<span class="token-keyword">while</span> (iterator.valid()) {
-  console.log(iterator.current());
-  iterator.next();
+            <p class="slide-label reveal">03 / Iterator — Implementación Java</p>
+            <div class="code-block reveal"><span class="tcm">// Contrato del iterador</span>
+<span class="tk">interface</span> <span class="tc">Iterador</span>&lt;T&gt; { <span class="tk">boolean</span> <span class="tn">hasNext</span>(); T <span class="tn">next</span>(); }
+
+<span class="tcm">// Colección que expone su propio iterador</span>
+<span class="tk">class</span> <span class="tc">Catalogo</span> {
+    <span class="tk">private final</span> String[] items;
+    <span class="tc">Catalogo</span>(String[] items) { <span class="tk">this</span>.items = items; }
+
+    <span class="tk">public</span> <span class="tc">Iterador</span>&lt;String&gt; <span class="tn">iterator</span>() {
+        <span class="tk">return new</span> <span class="tc">Iterador</span>&lt;String&gt;() {
+            <span class="tk">private int</span> pos = <span class="tn">0</span>;
+            <span class="tk">public boolean</span> <span class="tn">hasNext</span>() { <span class="tk">return</span> pos &lt; items.length; }
+            <span class="tk">public</span> String  <span class="tn">next</span>()    { <span class="tk">return</span> items[pos++]; }
+        };
+    }
 }</div>
+        </div>
+    </section>
+
+    <!-- ===================== SLIDE 8: TAXONOMÍA GOF ===================== -->
+    <section class="slide" id="slide-8">
+        <div class="centered-layout">
+            <h2 class="reveal">Taxonomía GoF</h2>
+            <div class="table-scroll reveal">
+                <table class="comp-table">
+                    <thead>
+                        <tr>
+                            <th>Patrón</th>
+                            <th>Categoría</th>
+                            <th>Intención</th>
+                            <th>Caso de uso típico</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Adapter</td><td>Estructural</td><td>Compatibilidad</td><td>Integración de sistemas legados</td></tr>
+                        <tr><td>Builder</td><td>Creacional</td><td>Construcción guiada</td><td>Objetos con múltiples variantes</td></tr>
+                        <tr><td>Iterator</td><td>Comportamiento</td><td>Acceso secuencial</td><td>Traversal de colecciones heterogéneas</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 8: ITERATOR DEMO -->
-    <section class="slide" id="slide-iterator-demo">
-        <div class="split-layout">
-            <div class="content-panel">
-                <h3 class="reveal">Visualización: Iterator</h3>
-                <p class="reveal">Un cursor (Dorado) navega una matriz en espiral.</p>
-                <p class="reveal highlight-text">[ Ciclo Continuo ]<br>El iterador encapsula el estado de la posición. El cliente solo solicita el siguiente nodo sin saber que se mueve en una espiral 3D.</p>
-            </div>
-            <div class="visual-panel">
-                <div class="scene-3d">
-                    <div class="voxel-world" id="world-iterator" style="transform: rotateX(-35deg) rotateY(45deg);"></div>
+    <!-- ===================== SLIDE 9: TRADE-OFFS ===================== -->
+    <section class="slide" id="slide-9">
+        <div class="centered-layout">
+            <h2 class="reveal">Análisis de Trade-offs</h2>
+            <div class="grid-3 reveal">
+                <div class="card">
+                    <h3>Adapter</h3>
+                    <p class="card-pro">+ Sin modificar código base</p>
+                    <p class="card-pro">+ Reutilización de legado</p>
+                    <p class="card-con">– Aumenta complejidad general</p>
+                </div>
+                <div class="card">
+                    <h3>Builder</h3>
+                    <p class="card-pro">+ Construcción fluida y legible</p>
+                    <p class="card-pro">+ Previene inconsistencias</p>
+                    <p class="card-con">– Requiere múltiples clases</p>
+                </div>
+                <div class="card">
+                    <h3>Iterator</h3>
+                    <p class="card-pro">+ Traversal uniforme</p>
+                    <p class="card-pro">+ Abstrae la estructura interna</p>
+                    <p class="card-con">– Overhead vs. for-each nativo</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SLIDE 9: OUTRO -->
-    <section class="slide" id="slide-outro">
-        <div class="centered-layout" style="align-items: center; text-align: center;">
-            <h2 class="reveal">Ingeniería Estructurada</h2>
-            <p class="reveal" style="text-align: center; margin: 0 auto 3rem;">
-                La correcta aplicación de patrones reduce la deuda técnica y aumenta la mantenibilidad del sistema.
-            </p>
-            <div class="authors reveal" style="border-top: none; padding-top: 0;">
-                Vóxeles Matemáticos en CSS Puro<br>
-                <span>Iván Piñeres & Anderson Gonzalez</span>
+    <!-- ===================== SLIDE 10: CUÁNDO USAR ===================== -->
+    <section class="slide" id="slide-10">
+        <div class="centered-layout">
+            <h2 class="reveal">¿Cuándo usar cada patrón?</h2>
+            <div class="grid-3 reveal">
+                <div class="card">
+                    <h3>Adapter</h3>
+                    <ul style="margin-left:1.2rem; margin-top:0.5rem;">
+                        <li>Código legado inmodificable</li>
+                        <li>Librerías con API incompatible</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Builder</h3>
+                    <ul style="margin-left:1.2rem; margin-top:0.5rem;">
+                        <li>Constructores gigantes</li>
+                        <li>Pasos de creación en orden estricto</li>
+                    </ul>
+                </div>
+                <div class="card">
+                    <h3>Iterator</h3>
+                    <ul style="margin-left:1.2rem; margin-top:0.5rem;">
+                        <li>Estructura interna muy compleja</li>
+                        <li>Múltiples formas de recorrer datos</li>
+                    </ul>
+                </div>
             </div>
+        </div>
+    </section>
+
+    <!-- ===================== SLIDE 11: CONCLUSIONES ===================== -->
+    <section class="slide" id="slide-11">
+        <div class="split-layout">
+            <div class="content-panel">
+                <h2 class="reveal">Conclusiones</h2>
+                <ul class="reveal">
+                    <li><strong>Adapter:</strong> Integra sistemas existentes sin riesgo.</li>
+                    <li><strong>Builder:</strong> Domina la complejidad constructiva.</li>
+                    <li><strong>Iterator:</strong> Unifica el acceso a los datos.</li>
+                </ul>
+                <p class="reveal">Los patrones GoF proporcionan un <strong>vocabulario arquitectónico compartido</strong> que facilita la comunicación en ingeniería de software.</p>
+                <div class="authors reveal">
+                    <span>Anderson González · Iván Piñeres</span>
+                    <span>Ingeniería de Sistemas — Patrones de Diseño</span>
+                </div>
+            </div>
+            <div class="visual-panel"><div class="scene-3d"><div class="voxel-world" id="world-conclusion"></div></div></div>
         </div>
     </section>
 
     <script>
-        class SlidePresentation {
-            constructor() {
-                this.slides = Array.from(document.querySelectorAll('.slide'));
-                this.currentSlideIndex = 0;
-                this.setupNavigation();
-                this.updateUI();
-                this.initAllScenes();
+    (function () {
+        "use strict";
+
+        /* ============================================================
+           VOXEL ENGINE
+           ============================================================ */
+        var colors = {
+            slate: "var(--voxel-slate)", rust:  "var(--voxel-rust)", sand:  "var(--voxel-sand)",
+            sage:  "var(--voxel-sage)", gold:  "var(--voxel-gold)", dark:  "var(--voxel-dark)"
+        };
+
+        var faceNames = ["front", "back", "right", "left", "top", "bottom"];
+
+        function createVoxel(x, y, z, color, id) {
+            var el = document.createElement("div");
+            el.className = "voxel";
+            if (id) el.id = id;
+            el.setAttribute("data-y", y);
+
+            el.style.setProperty("--x", x);
+            el.style.setProperty("--y", y);
+            el.style.setProperty("--z", z);
+            el.style.setProperty("--v-color", color);
+
+            for (var i = 0; i < faceNames.length; i++) {
+                var face = document.createElement("div");
+                face.className = "f-" + faceNames[i];
+                el.appendChild(face);
             }
-
-            setupNavigation() {
-                // Teclado
-                document.addEventListener('keydown', (e) => {
-                    if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
-                        e.preventDefault();
-                        this.goToNextSlide();
-                    } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
-                        e.preventDefault();
-                        this.goToPrevSlide();
-                    }
-                });
-            }
-
-            goToNextSlide() {
-                if (this.currentSlideIndex < this.slides.length - 1) {
-                    this.currentSlideIndex++;
-                    this.updateUI();
-                }
-            }
-
-            goToPrevSlide() {
-                if (this.currentSlideIndex > 0) {
-                    this.currentSlideIndex--;
-                    this.updateUI();
-                }
-            }
-
-            updateUI() {
-                this.slides.forEach((slide, index) => {
-                    slide.classList.toggle('active', index === this.currentSlideIndex);
-                });
-
-                // Barra de progreso
-                const progress = ((this.currentSlideIndex + 1) / this.slides.length) * 100;
-                document.getElementById('progressFill').style.width = `${progress}%`;
-
-                // Contador
-                const current = String(this.currentSlideIndex + 1).padStart(2, '0');
-                const total = String(this.slides.length).padStart(2, '0');
-                document.getElementById('slideCounter').innerText = `${current} / ${total}`;
-            }
-
-            initAllScenes() {
-                renderTitleScene();
-                renderAdapterScene(); loopAdapter();
-                renderBuilderScene(); loopBuilder();
-                renderIteratorScene(); loopIterator();
-            }
-        }
-
-        /* ===========================================
-           MOTOR VÓXEL 3D
-           =========================================== */
-        function createVoxel(x, y, z, color, id = null) {
-            const v = document.createElement('div');
-            v.className = 'voxel';
-            if (id) v.id = id;
-            v.style.setProperty('--x', x);
-            v.style.setProperty('--y', y);
-            v.style.setProperty('--z', z);
-            v.style.setProperty('--v-color', color);
-
-            const faces = ['top', 'bottom', 'left', 'right', 'front', 'back'];
-            faces.forEach(f => {
-                const face = document.createElement('div');
-                face.className = `face ${f}`;
-                v.appendChild(face);
-            });
-            return { element: v, coords: {x, y, z} };
+            return { element: el, coords: {x: x, y: y, z: z} };
         }
 
         function renderScene(containerId, voxels) {
-            const container = document.getElementById(containerId);
-            container.innerHTML = ''; 
-            voxels.sort((a, b) => (b.coords.x + b.coords.z - b.coords.y) - (a.coords.x + a.coords.z - a.coords.y));
-            voxels.forEach(v => container.appendChild(v.element));
-        }
-
-        const colors = { slate: '#4a6672', rust: '#8a5a4a', sand: '#b4a89a', sage: '#5b6a52', gold: '#c49363', dark: '#2a2826' };
-
-        function renderTitleScene() {
-            let voxels =[];
-            for(let x=0; x<3; x++)
-                for(let z=0; z<3; z++)
-                    for(let y=0; y<3; y++)
-                        if((x+y+z)%2===0) voxels.push(createVoxel(x-1, y-1, z-1, y===2?colors.rust:(x===1?colors.sand:colors.slate)));
-            renderScene('world-title', voxels);
-            const world = document.getElementById('world-title');
-            let angle = 45;
-            setInterval(() => { angle += 0.15; world.style.transform = `rotateX(-35deg) rotateY(${angle}deg)`; }, 50);
-        }
-
-        function renderAdapterScene() {
-            let v = [];
-            v.push(createVoxel(-3,0,0,colors.slate), createVoxel(-3,1,0,colors.slate), createVoxel(-3,-1,0,colors.slate));
-            v.push(createVoxel(3,0,0,colors.rust), createVoxel(4,0,0,colors.rust), createVoxel(4,1,0,colors.rust));
-            for(let i=-2; i<=2; i++) {
-                let p = createVoxel(i, 6, 0, colors.sand, `adapter-piece-${i}`);
-                p.element.style.opacity = '0';
-                v.push(p);
+            var container = document.getElementById(containerId);
+            if (!container) return;
+            container.innerHTML = "";
+            // Painter's algorithm — ordena por profundidad
+            voxels.sort(function(a, b) {
+                var dA = a.coords.x + a.coords.z - a.coords.y;
+                var dB = b.coords.x + b.coords.z - b.coords.y;
+                return dB - dA;
+            });
+            for (var i = 0; i < voxels.length; i++) {
+                container.appendChild(voxels[i].element);
             }
-            renderScene('world-adapter', v);
+        }
+
+        /* ── 1. Título & Conclusión ── */
+        function renderTitleScene() {
+            function buildCheckerboard(worldId) {
+                var voxels = [];
+                for (var x = 0; x < 3; x++) {
+                    for (var z = 0; z < 3; z++) {
+                        for (var y = 0; y < 3; y++) {
+                            if ((x + y + z) % 2 === 0) {
+                                var c = y === 2 ? colors.rust : (x === 1 ? colors.sand : colors.slate);
+                                voxels.push(createVoxel(x - 1, y - 1, z - 1, c));
+                            }
+                        }
+                    }
+                }
+                renderScene(worldId, voxels);
+                var world = document.getElementById(worldId);
+                var angle = 45;
+                setInterval(function () {
+                    angle += 0.2;
+                    if (world) world.style.transform = "rotateX(-35deg) rotateY(" + angle + "deg)";
+                }, 50);
+            }
+            buildCheckerboard('world-title');
+            buildCheckerboard('world-conclusion');
+        }
+
+        /* ── 2. Adapter — Puente cayendo ── */
+        function renderAdapterScene() {
+            var voxels = [];
+            // Target (Izquierda — pizarra)
+            voxels.push(createVoxel(-3,  0, 0, colors.slate));
+            voxels.push(createVoxel(-3,  1, 0, colors.slate));
+            voxels.push(createVoxel(-3, -1, 0, colors.slate));
+            voxels.push(createVoxel(-2,  1, 0, colors.slate));
+            voxels.push(createVoxel(-2, -1, 0, colors.slate));
+            // Adaptee (Derecha — óxido)
+            voxels.push(createVoxel(3,  0, 0, colors.rust));
+            voxels.push(createVoxel(4,  0, 0, colors.rust));
+            voxels.push(createVoxel(4,  1, 0, colors.rust));
+            voxels.push(createVoxel(4, -1, 0, colors.rust));
+            // Puente Adapter (Arena) — empieza invisible arriba
+            for (var i = -2; i <= 2; i++) {
+                var v = createVoxel(i, 6, 0, colors.sand, "adapter-piece-" + i);
+                v.element.style.opacity = '0';
+                v.element.classList.add("adapter-bridge");
+                voxels.push(v);
+            }
+            renderScene('world-adapter', voxels);
         }
 
         function loopAdapter() {
-            const world = document.getElementById('world-adapter');
+            var world = document.getElementById('world-adapter');
+            if (!world) return;
             world.style.transition = 'none';
-            world.style.transform = `rotateX(-20deg) rotateY(30deg)`;
-            for(let i=-2; i<=2; i++){
-                const el = document.getElementById(`adapter-piece-${i}`);
-                if(el){ el.style.transition='none'; el.style.opacity='0'; el.style.setProperty('--y','6'); }
-            }
-            setTimeout(() => {
-                world.style.transition = 'transform 2.5s var(--ease-out-expo)';
-                world.style.transform = `rotateX(-15deg) rotateY(15deg)`;
-                for(let i=-2; i<=2; i++) {
-                    setTimeout(() => {
-                        const el = document.getElementById(`adapter-piece-${i}`);
-                        if(el){ el.style.transition='opacity 0.6s, transform 1s var(--ease-out-expo)'; el.style.opacity='1'; el.style.setProperty('--y','0'); }
-                    }, (i+2)*350);
-                }
+            world.style.transform  = "rotateX(-20deg) rotateY(30deg)";
+
+            var bridges = document.querySelectorAll(".adapter-bridge");
+            bridges.forEach(function (el) {
+                el.style.transition = 'none';
+                el.style.opacity = '0';
+                el.style.setProperty('--y', '6');
+            });
+
+            setTimeout(function () {
+                world.style.transition = 'transform 2.5s var(--ease-expo)';
+                world.style.transform  = "rotateX(-15deg) rotateY(15deg)";
+                bridges.forEach(function (el, i) {
+                    setTimeout(function () {
+                        el.style.transition = 'opacity 0.6s, transform 1s var(--ease-expo)';
+                        el.style.opacity = '1';
+                        el.style.setProperty('--y', '0');
+                    }, (i + 1) * 350);
+                });
             }, 500);
             setTimeout(loopAdapter, 6000);
         }
 
-        const builderPlan = [[-2,-1,0],[-1,-1,0],[0,-1,0],[1,-1,0],[2,-1,0],[2,0,0],[2,1,0],[2,2,0],[-2,0,0],[-2,1,0],[-2,2,0],[-2,3,0],[-1,3,0],[0,3,0],[1,3,0],[2,3,0]];
+        /* ── 3. Builder — Arco arquitectónico ── */
+        // Coordenadas Y desplazadas +0.5 para compensar la compresión
+        // visual de rotateX(-25deg) que hace que el arco aparezca más bajo.
+        var builderPlan = [
+            [-2,-1.5,0],[-1,-1.5,0],[0,-1.5,0],[1,-1.5,0],[2,-1.5,0], // Base
+            [-2,-0.5,0],[-2,0.5,0],[-2,1.5,0],                        // Pilar Izq
+            [ 2,-0.5,0],[ 2,0.5,0],[ 2,1.5,0],                        // Pilar Der
+            [-2, 2.5,0],[-1,2.5,0],[0,2.5,0],[1,2.5,0],[2,2.5,0]      // Techo
+        ];
+
         function renderBuilderScene() {
-            let v = [];
-            builderPlan.forEach((pos, i) => {
-                let p = createVoxel(pos[0], pos[1]+6, pos[2], colors.sage, `build-piece-${i}`);
-                p.element.style.setProperty('--s', '0');
-                v.push(p);
-            });
-            renderScene('world-builder', v);
+            var voxels = [];
+            for (var i = 0; i < builderPlan.length; i++) {
+                var pos = builderPlan[i];
+                // Piezas empiezan 6 unidades arriba durante la animación
+                var v = createVoxel(pos[0], pos[1] + 6, pos[2], colors.sage, "build-piece-" + i);
+                v.element.setAttribute('data-target-y', pos[1]);
+                v.element.style.setProperty('--s', '0');
+                v.element.classList.add("builder-piece");
+                voxels.push(v);
+            }
+            renderScene('world-builder', voxels);
         }
 
         function loopBuilder() {
-            const world = document.getElementById('world-builder');
+            var world = document.getElementById('world-builder');
+            if (!world) return;
             world.style.transition = 'none';
-            world.style.transform = `rotateX(-25deg) rotateY(-35deg)`;
-            builderPlan.forEach((pos, i) => {
-                const el = document.getElementById(`build-piece-${i}`);
-                if(el){ el.style.transition='none'; el.style.setProperty('--s','0'); el.style.setProperty('--y',pos[1]+6); }
+            world.style.transform  = "rotateX(-25deg) rotateY(-35deg)";
+
+            var pieces = document.querySelectorAll(".builder-piece");
+            pieces.forEach(function (el) {
+                el.style.transition = 'none';
+                el.style.setProperty('--s', '0');
+                // Restaurar posición inicial: target-y + 6 unidades arriba
+                var ty = parseFloat(el.getAttribute('data-target-y') || el.getAttribute('data-y'));
+                el.style.setProperty('--y', ty + 6);
             });
-            setTimeout(() => {
-                world.style.transition = 'transform 3.5s var(--ease-out-expo)';
-                world.style.transform = `rotateX(-15deg) rotateY(15deg)`;
-                builderPlan.forEach((pos, i) => {
-                    setTimeout(() => {
-                        const el = document.getElementById(`build-piece-${i}`);
-                        if(el){ el.style.transition='transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s'; el.style.setProperty('--s','1'); el.style.setProperty('--y',pos[1]); }
-                    }, i*200);
+
+            setTimeout(function () {
+                world.style.transition = 'transform 3.5s var(--ease-expo)';
+                world.style.transform  = "rotateX(-15deg) rotateY(15deg)";
+                pieces.forEach(function (el, i) {
+                    setTimeout(function () {
+                        el.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s';
+                        el.style.setProperty('--s', '1');
+                        var ty = parseFloat(el.getAttribute('data-target-y') || el.getAttribute('data-y'));
+                        el.style.setProperty('--y', ty);
+                    }, i * 150);
                 });
             }, 500);
-            setTimeout(loopBuilder, 8000);
+            setTimeout(loopBuilder, 7500);
         }
 
-        const pathCoords = [[0,0,0],[1,0,0],[2,0,0],[2,0,1],[2,0,2],[1,0,2],[0,0,2],[-1,0,2],[-2,0,2],[-2,0,1],[-2,0,0],[-2,0,-1],[-2,0,-2],[-1,0,-2],[0,0,-2],[1,0,-2],[2,0,-2],[3,0,-2],[3,0,-1]];
+        /* ── 4. Iterator — Cursor en espiral ── */
+        var pathCoords = [
+            [0,0,0],[1,0,0],[2,0,0],[2,0,1],[2,0,2],[1,0,2],[0,0,2],[-1,0,2],
+            [-2,0,2],[-2,0,1],[-2,0,0],[-2,0,-1],[-2,0,-2],[-1,0,-2],[0,0,-2],
+            [1,0,-2],[2,0,-2],[3,0,-2],[3,0,-1]
+        ];
+
         function renderIteratorScene() {
-            let v = [];
-            pathCoords.forEach((pos, i) => v.push(createVoxel(pos[0],pos[1],pos[2],colors.dark, `path-node-${i}`)));
-            v.push(createVoxel(pathCoords[0][0],pathCoords[0][1]+1,pathCoords[0][2],colors.gold,'iter-cursor'));
-            renderScene('world-iterator', v);
+            var voxels = [];
+            for (var i = 0; i < pathCoords.length; i++) {
+                var pos = pathCoords[i];
+                voxels.push(createVoxel(pos[0], pos[1], pos[2], colors.dark, "path-node-" + i));
+            }
+            voxels.push(createVoxel(pathCoords[0][0], pathCoords[0][1] + 1, pathCoords[0][2], colors.gold, "iter-cursor"));
+            renderScene('world-iterator', voxels);
         }
 
         function loopIterator() {
-            const cursor = document.getElementById('iter-cursor');
-            let step = 0;
+            var cursor = document.getElementById('iter-cursor');
+            if (!cursor) return;
+            var step = 0;
+
             cursor.style.transition = 'none';
             cursor.style.setProperty('--x', pathCoords[0][0]);
             cursor.style.setProperty('--z', pathCoords[0][2]);
-            void cursor.offsetWidth;
-            cursor.style.transition = 'transform 0.6s var(--ease-out-expo)';
-            const iterInterval = setInterval(() => {
+            void cursor.offsetWidth; // Force reflow
+            cursor.style.transition = 'transform 0.6s var(--ease-expo)';
+
+            var iterInterval = setInterval(function () {
                 if (step >= pathCoords.length) {
                     clearInterval(iterInterval);
                     setTimeout(loopIterator, 2000);
                     return;
                 }
-                const pos = pathCoords[step];
+                var pos = pathCoords[step];
                 cursor.style.setProperty('--x', pos[0]);
                 cursor.style.setProperty('--z', pos[2]);
-                const node = document.getElementById(`path-node-${step}`);
-                if(node){ node.style.setProperty('--v-color', colors.sand); setTimeout(()=>node.style.setProperty('--v-color',colors.dark),500); }
+
+                var node = document.getElementById("path-node-" + step);
+                if (node) {
+                    node.style.setProperty('--v-color', colors.sand);
+                    (function(n) {
+                        setTimeout(function () { n.style.setProperty('--v-color', colors.dark); }, 500);
+                    })(node);
+                }
                 step++;
             }, 600);
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            window.presentation = new SlidePresentation();
+        /* Inicializar todas las escenas */
+        setTimeout(function () {
+            renderTitleScene();
+            renderAdapterScene(); loopAdapter();
+            renderBuilderScene(); loopBuilder();
+            renderIteratorScene(); loopIterator();
+        }, 300);
+
+        /* ============================================================
+           SCROLL-SNAP + INTERSECTION OBSERVER + NAVEGACIÓN
+           ============================================================ */
+        var slides       = Array.prototype.slice.call(document.querySelectorAll(".slide"));
+        var total        = slides.length;
+        var progressFill = document.getElementById("progress-fill");
+        var counterEl    = document.getElementById("slide-counter");
+        var currentIndex = 0;
+
+        function updateUI(index) {
+            currentIndex = index;
+            var pct = ((index + 1) / total) * 100;
+            if (progressFill) progressFill.style.width = pct + "%";
+            if (counterEl)    counterEl.textContent = (index + 1) + " / " + total;
+        }
+
+        var observer = new IntersectionObserver(function (entries) {
+            entries.forEach(function (entry) {
+                if (entry.isIntersecting && entry.intersectionRatio >= 0.5) {
+                    entry.target.classList.add("visible");
+                    updateUI(slides.indexOf(entry.target));
+                }
+            });
+        }, { threshold: 0.5 });
+
+        slides.forEach(function (slide) { observer.observe(slide); });
+        if (slides.length > 0) {
+            slides[0].classList.add("visible");
+            updateUI(0);
+        }
+
+        /* Teclado */
+        document.addEventListener("keydown", function (e) {
+            var fwd = ["ArrowDown", "ArrowRight", " ", "PageDown"];
+            var bck = ["ArrowUp",   "ArrowLeft",       "PageUp"];
+            if (fwd.indexOf(e.key) !== -1) {
+                e.preventDefault();
+                slides[Math.min(currentIndex + 1, total - 1)].scrollIntoView({ behavior: "smooth" });
+            } else if (bck.indexOf(e.key) !== -1) {
+                e.preventDefault();
+                slides[Math.max(currentIndex - 1, 0)].scrollIntoView({ behavior: "smooth" });
+            }
         });
+
+        /* Click zones */
+        document.getElementById('navLeft').onclick = function () {
+            slides[Math.max(currentIndex - 1, 0)].scrollIntoView({ behavior: "smooth" });
+        };
+        document.getElementById('navRight').onclick = function () {
+            slides[Math.min(currentIndex + 1, total - 1)].scrollIntoView({ behavior: "smooth" });
+        };
+
+    }());
     </script>
 </body>
 </html>
