@@ -667,25 +667,57 @@
             buildCheckerboard('world-conclusion');
         }
 
-        // Animación abstracta (cimientos) para la nueva diapositiva de introducción
+        // ============================================================
+        // NUEVA ANIMACIÓN 3D PARA INTRODUCCIÓN ("El Templo / Fundamento")
+        // ============================================================
         function renderIntroScene() {
             var voxels =[];
-            // Bloques base (cimientos de los patrones)
+            
+            // 1. Base sólida (Cimientos)
             for(var x = -1; x <= 1; x++) {
                 for(var z = -1; z <= 1; z++) {
-                    voxels.push(createVoxel(x, 1, z, colors.sand));
+                    voxels.push(createVoxel(x, 2, z, colors.slate));
                 }
             }
-            // Bloque principal
-            voxels.push(createVoxel(0, 0, 0, colors.rust));
+            
+            // 2. Pilares de la estructura (Soporte)
+            var pilares = [[-1,-1], [-1,1], [1,-1], [1,1]];
+            pilares.forEach(function(p) {
+                voxels.push(createVoxel(p[0], 1, p[1], colors.sand));
+                voxels.push(createVoxel(p[0], 0, p[1], colors.sand));
+            });
+            
+            // 3. Bóveda superior hueca
+            for(var x = -1; x <= 1; x++) {
+                for(var z = -1; z <= 1; z++) {
+                    if(x === 0 && z === 0) continue; // Hueco en el medio
+                    voxels.push(createVoxel(x, -1, z, colors.sage));
+                }
+            }
+            
+            // 4. El "Patrón" (Núcleo central levitando)
+            var core = createVoxel(0, 0.5, 0, colors.rust);
+            voxels.push(core);
 
+            // Renderizar la escena completa
             renderScene('world-intro', voxels);
+
+            // Animación continua de giro de la cámara (mundo)
             var world = document.getElementById('world-intro');
-            var angle = -45;
+            var angle = 45;
             setInterval(function () {
-                angle -= 0.3;
+                angle += 0.3;
                 if (world) world.style.transform = "rotateX(-25deg) rotateY(" + angle + "deg)";
             }, 50);
+
+            // Animación suave de levitación del núcleo usando transiciones CSS nativas
+            core.element.style.transition = 'transform 1.5s ease-in-out';
+            var isUp = true;
+            setInterval(function() {
+                // Alterna entre la posición de arriba y la de abajo
+                core.element.style.setProperty('--y', isUp ? 0.8 : -0.2);
+                isUp = !isUp;
+            }, 1500);
         }
 
         function renderAdapterScene() {
@@ -816,7 +848,7 @@
 
         setTimeout(function () {
             renderTitleScene();
-            renderIntroScene(); // Se llama la renderización de la nueva diapositiva
+            renderIntroScene(); // Construye el nuevo modelo vistoso 3D
             renderAdapterScene(); loopAdapter();
             renderBuilderScene(); loopBuilder();
             renderIteratorScene(); loopIterator();
