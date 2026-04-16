@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrones de Diseño Avanzados</title>
+
+    <!-- Tipografía Editorial (Claude-like) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=Source+Sans+3:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (THEME CLAUDE-LIKE)
+           =========================================== */
+        :root {
+            --bg-primary: #1c1b1a;     
+            --bg-secondary: #272523;   
+            --bg-tertiary: #312f2c;
+            --text-primary: #e8e6e3;   
+            --text-secondary: #a3a09a; 
+            --border-subtle: rgba(255, 255, 255, 0.08);
+            
+            --voxel-slate: #5e7c88;    
+            --voxel-rust: #9e6b5a;     
+            --voxel-sand: #c4b8aa;     
+            --voxel-sage: #6b7a62;     
+            --voxel-gold: #d4a373;     
+            --voxel-dark: #3a3836;     
+
+            --font-display: 'Newsreader', serif;
+            --font-body: 'Source Sans 3', sans-serif;
+            --font-mono: 'Fira Code', monospace;
+
+            --title-size: clamp(2.5rem, 6vw, 4.5rem);
+            --h2-size: clamp(2rem, 4vw, 3rem);
+            --h3-size: clamp(1.25rem, 2.5vw, 1.75rem);
+            --body-size: clamp(1rem, 1.5vw, 1.15rem);
+            --small-size: clamp(0.8rem, 1vw, 0.9rem);
+
+            --slide-padding: clamp(3rem, 6vw, 6rem);
+            --content-gap: clamp(1.5rem, 3vw, 2.5rem);
+
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.8s;
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING
+           =========================================== */
+        html, body {
+            height: 100%;
+            overflow-x: hidden;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            line-height: 1.6;
+        }
+
+        html {
+            scroll-snap-type: y mandatory;
+            scroll-behavior: smooth;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            position: relative;
+        }
+
+        /* ===========================================
+           LAYOUTS
+           =========================================== */
+        .split-layout {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .content-panel {
+            width: 45%;
+            padding: var(--slide-padding);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid var(--border-subtle);
+            z-index: 10;
+            background-color: var(--bg-primary);
+        }
+
+        .visual-panel {
+            width: 55%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        .centered-layout {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--slide-padding);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--slide-padding);
+            margin-top: var(--content-gap);
+        }
+
+        h1, h2, h3 {
+            font-family: var(--font-display);
+            font-weight: 500;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            margin-bottom: var(--content-gap);
+        }
+        h1 { font-size: var(--title-size); }
+        h2 { font-size: var(--h2-size); }
+        h3 { font-size: var(--h3-size); margin-bottom: 1rem; color: var(--text-primary); }
+        
+        p, li {
+            font-size: var(--body-size);
+            color: var(--text-secondary);
+            margin-bottom: calc(var(--content-gap) * 0.6);
+            max-width: 55ch;
+        }
+
+        ul { margin-left: 1.5rem; margin-bottom: var(--content-gap); }
+        li { margin-bottom: 0.5rem; }
+        strong { color: var(--text-primary); font-weight: 600; }
+
+        .code-block {
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            background: var(--bg-secondary);
+            padding: 1.5rem;
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
+            color: var(--text-secondary);
+            white-space: pre-wrap;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.2);
+            line-height: 1.5;
+        }
+        .token-keyword { color: var(--voxel-sand); }
+        .token-class { color: var(--voxel-slate); }
+        .token-string { color: var(--voxel-sage); }
+        .token-comment { color: #666; font-style: italic; }
+
+        .authors {
+            margin-top: auto;
+            padding-top: var(--content-gap);
+            border-top: 1px solid var(--border-subtle);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+        }
+        .authors span { display: block; color: var(--text-primary); }
+        
+        .keyboard-hint {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            opacity: 0.5;
+        }
+
+        /* ===========================================
+           ANIMACIONES DE ENTRADA
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        .slide.visible .reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal:nth-child(1) { transition-delay: 0.1s; }
+        .reveal:nth-child(2) { transition-delay: 0.2s; }
+        .reveal:nth-child(3) { transition-delay: 0.3s; }
+        .reveal:nth-child(4) { transition-delay: 0.4s; }
+
+        /* ===========================================
+           MOTOR DE VÓXELES 3D CSS
+           =========================================== */
+        .scene-3d {
+            perspective: 2500px;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voxel-world {
+            position: relative;
+            transform-style: preserve-3d;
+            transform: rotateX(-35deg) rotateY(45deg);
+            transition: transform 1.2s var(--ease-out-expo);
+            width: 0; height: 0;
+        }
+
+        .voxel {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            transform-style: preserve-3d;
+            left: -20px; 
+            top: -20px;
+            transform: translate3d(
+                calc(var(--x) * 40px),
+                calc(var(--y) * -40px),
+                calc(var(--z) * 40px)
+            ) scale3d(var(--s, 1), var(--s, 1), var(--s, 1));
+            transition: transform 0.6s var(--ease-out-expo), opacity 0.4s;
+        }
+
+        .voxel .face {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            backface-visibility: visible;
+        }
+
+        /* Construcción de las 6 caras del cubo */
+        .voxel .front  { transform: translateZ(20px); background: var(--v-color); }
+        .voxel .back   { transform: translateZ(-20px) rotateY(180deg); background: color-mix(in srgb, var(--v-color) 40%, black); }
+        .voxel .right  { transform: translateX(20px) rotateY(90deg); background: color-mix(in srgb, var(--v-color) 70%, black); }
+        .voxel .left   { transform: translateX(-20px) rotateY(-90deg); background: color-mix(in srgb, var(--v-color) 90%, white); }
+        .voxel .top    { transform: translateY(-20px) rotateX(90deg); background: color-mix(in srgb, var(--v-color) 60%, white); }
+        .voxel .bottom { transform: translateY(20px) rotateX(-90deg); background: color-mix(in srgb, var(--v-color) 20%, black); }
+
+        .btn-interactive {
+            background: transparent;
+            border: 1px solid var(--border-subtle);
+            color: var(--text-primary);
+            padding: 0.75rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            cursor: pointer;
+            transition: background 0.3s, border-color 0.3s;
+            margin-top: 1rem;
+            display: inline-block;
+        }
+        .btn-interactive:hover {
+            background: var(--bg-tertiary);
+            border-color: var(--text-secondary);
+        }
+
+        @media (max-width: 900px) {
+            .split-layout { flex-direction: column; }
+            .content-panel { width: 100%; height: 50%; border-right: none; border-bottom: 1px solid var(--border-subtle); }
+            .visual-panel { width: 100%; height: 50%; }
+            .grid-2 { grid-template-columns: 1fr; gap: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- DIAPOSITIVA 1: TÍTULO -->
+    <section class="slide" id="slide-title">
+        <div class="split-layout">
+            <div class="content-panel">
+                <h1 class="reveal">Patrones<br>de Diseño</h1>
+                <p class="reveal">Una exploración estructural interactiva de arquitecturas de software: Adapter, Builder e Iterator.</p>
+                <div class="authors reveal">
+                    Presentado por:
+                    <span>Iván Piñeres [estudiante]</span>
+                    <span>Anderson Gonzalez [estudiante]</span>
+                </div>
+            </div>
+            <div class="visual-panel">
+                <div class="scene-3d">
+                    <div class="voxel-world" id="world-title"></div>
+                </div>
+            </div>
+        </div>
+        <div class="keyboard-hint reveal">Navega usando la Barra Espaciadora[Space] o Flechas</div>
+    </section>
+
+    <!-- DIAPOSITIVA 2: INTRODUCCIÓN -->
+    <section class="slide" id="slide-intro">
+        <div class="centered-layout">
+            <h2 class="reveal">¿Por qué usar Patrones?</h2>
+            <div class="grid-2">
+                <div class="reveal">
+                    <h3>Abstracción Comprobada</h3>
+                    <p>Los patrones de diseño no son librerías. Son soluciones conceptuales probadas a problemas recurrentes en el diseño de software orientado a objetos.</p>
+                </div>
+                <div class="reveal">
+                    <h3>Vocabulario Común</h3>
+                    <p>Proporcionan un lenguaje estandarizado. Decir "usemos un Adapter" comunica instantáneamente una arquitectura completa al equipo sin necesidad de diagramar cada clase.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIAPOSITIVA 3: ADAPTER CONCEPT -->
+    <section class="slide" id="slide-adapter-concept">
+        <div class="centered-layout">
+            <h2 class="reveal">1. Adapter Pattern</h2>
+            <div class="grid-2">
+                <div class="reveal">
+                    <p><strong>Clasificación:</strong> Patrón Estructural.</p>
+                    <p>Actúa como un envoltorio (wrapper). Permite que objetos con interfaces incompatibles colaboren entre sí.</p>
+                    <p>Se utiliza comúnmente cuando necesitas integrar clases heredadas de terceros, APIs antiguas o bibliotecas externas sin modificar su código fuente original.</p>
+                </div>
+                <div class="code-block reveal">
+<span class="token-comment">// La interfaz esperada por el sistema</span>
+<span class="token-keyword">interface</span> <span class="token-class">Target</span> {
+  request(): string;
+}
+
+<span class="token-comment">// La clase externa incompatible</span>
+<span class="token-keyword">class</span> <span class="token-class">Adaptee</span> {
+  specificRequest(): string {
+    <span class="token-keyword">return</span> <span class="token-string">".eetpadA led acifícepse atseupseR"</span>;
+  }
+}
+
+<span class="token-comment">// El Puente</span>
+<span class="token-keyword">class</span> <span class="token-class">Adapter</span> <span class="token-keyword">implements</span> Target {
+  <span class="token-keyword">constructor</span>(private adaptee: Adaptee) {}
+  
+  request(): string {
+    <span class="token-keyword">return</span> this.adaptee.specificRequest().reverse();
+  }
+}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIAPOSITIVA 4: ADAPTER DEMO -->
+    <section class="slide" id="slide-adapter-demo">
+        <div class="split-layout">
+            <div class="content-panel">
+                <h3 class="reveal">Visualización: Adapter</h3>
+                <p class="reveal">A la izquierda, nuestro sistema <strong>Target</strong> (Pizarra). A la derecha, el <strong>Adaptee</strong> externo (Óxido). Sus ranuras físicas son opuestas.</p>
+                <p class="reveal">El <strong>Adapter</strong> (Arena) rellena el vacío arquitectónico traduciendo las llamadas dinámicamente.</p>
+                <button class="btn-interactive reveal" onclick="triggerAdapter()">Generar Adapter Bridge</button>
+            </div>
+            <div class="visual-panel">
+                <div class="scene-3d">
+                    <div class="voxel-world" id="world-adapter" style="transform: rotateX(-20deg) rotateY(30deg);"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIAPOSITIVA 5: BUILDER CONCEPT -->
+    <section class="slide" id="slide-builder-concept">
+        <div class="centered-layout">
+            <h2 class="reveal">2. Builder Pattern</h2>
+            <div class="grid-2">
+                <div class="reveal">
+                    <p><strong>Clasificación:</strong> Patrón Creacional.</p>
+                    <p>Separa la construcción de un objeto complejo de su representación. Evita el "Telescoping Constructor Anti-pattern" (constructores inmensos con múltiples parámetros nulos).</p>
+                    <p>Delega la instanciación a un objeto <em>Builder</em> dedicado, y opcionalmente a un <em>Director</em> que conoce el orden exacto de los pasos.</p>
+                </div>
+                <div class="code-block reveal">
+<span class="token-comment">// Evitamos esto:</span>
+<span class="token-keyword">new</span> <span class="token-class">House</span>(true, false, 4, null, true, "red");
+
+<span class="token-comment">// Usando el Builder Pattern:</span>
+<span class="token-keyword">const</span> house = <span class="token-keyword">new</span> <span class="token-class">HouseBuilder</span>()
+  .buildWalls(<span class="token-keyword">4</span>)
+  .buildDoors(<span class="token-keyword">2</span>)
+  .buildRoof(<span class="token-string">"Gable"</span>)
+  .hasGarage(<span class="token-keyword">true</span>)
+  .getResult();</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIAPOSITIVA 6: BUILDER DEMO -->
+    <section class="slide" id="slide-builder-demo">
+        <div class="split-layout">
+            <div class="content-panel">
+                <h3 class="reveal">Visualización: Builder</h3>
+                <p class="reveal">El algoritmo ensambla un objeto complejo por partes. En este caso, el director ordena: Base → Pilares → Puente superior.</p>
+                <p class="reveal">Observa cómo la rotación revela que <strong>todas las caras del objeto existen</strong> sin importar desde dónde se mire.</p>
+                <button class="btn-interactive reveal" onclick="triggerBuilder()">Ejecutar Director.construct()</button>
+            </div>
+            <div class="visual-panel">
+                <div class="scene-3d">
+                    <div class="voxel-world" id="world-builder" style="transform: rotateX(-25deg) rotateY(-35deg);"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIAPOSITIVA 7: ITERATOR CONCEPT -->
+    <section class="slide" id="slide-iterator-concept">
+        <div class="centered-layout">
+            <h2 class="reveal">3. Iterator Pattern</h2>
+            <div class="grid-2">
+                <div class="reveal">
+                    <p><strong>Clasificación:</strong> Patrón de Comportamiento.</p>
+                    <p>Proporciona una forma de acceder a los elementos de un objeto agregado secuencialmente, sin exponer su representación subyacente.</p>
+                    <p>El iterador encapsula toda la lógica de recorrido, manteniendo el código del cliente limpio e independiente de la estructura real (lista, árbol, grafo).</p>
+                </div>
+                <div class="code-block reveal">
+<span class="token-keyword">interface</span> <span class="token-class">Iterator</span>&lt;T&gt; {
+  current(): T;
+  next(): T;
+  key(): number;
+  valid(): boolean;
+}
+
+<span class="token-comment">// El cliente no sabe si 'collection' es Arbol o Array</span>
+<span class="token-keyword">const</span> iterator = collection.createIterator();
+
+<span class="token-keyword">while</span> (iterator.valid()) {
+  console.log(iterator.current());
+  iterator.next();
+}</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIAPOSITIVA 8: ITERATOR DEMO -->
+    <section class="slide" id="slide-iterator-demo">
+        <div class="split-layout">
+            <div class="content-panel">
+                <h3 class="reveal">Visualización: Iterator</h3>
+                <p class="reveal">El cursor (Dorado) actúa como nuestro iterador. Se desplaza a través de una compleja matriz en espiral.</p>
+                <p class="reveal">El consumidor solo llama a <code>.next()</code>; el iterador calcula automáticamente las coordenadas matemáticas X, Z internas.</p>
+                <button class="btn-interactive reveal" onclick="triggerIterator()">while (iter.hasNext())</button>
+            </div>
+            <div class="visual-panel">
+                <div class="scene-3d">
+                    <div class="voxel-world" id="world-iterator" style="transform: rotateX(-35deg) rotateY(45deg);"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIAPOSITIVA 9: CONCLUSIÓN -->
+    <section class="slide" id="slide-outro">
+        <div class="centered-layout" style="align-items: center; text-align: center;">
+            <h2 class="reveal">Ingeniería de Software Estructurada</h2>
+            <p class="reveal" style="text-align: center; margin: 0 auto; margin-bottom: 3rem;">
+                Adapter, Builder e Iterator representan tres pilares fundamentales: integrar, crear y recorrer de forma predecible y segura.
+            </p>
+            <div class="authors reveal" style="border-top: none; padding-top: 0;">
+                Proyecto desarrollado en HTML/CSS Puro con Renderizado Vóxel Matemático.<br>
+                <span>Iván Piñeres & Anderson Gonzalez</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- LÓGICA DE INTERACCIÓN Y VÓXELES -->
+    <script>
+        class SlidePresentation {
+            constructor() {
+                this.slides = Array.from(document.querySelectorAll('.slide'));
+                this.currentSlideIndex = 0;
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+            }
+
+            setupIntersectionObserver() {
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            this.triggerSlideInit(entry.target.id);
+                            // Actualizar indice actual basado en vista
+                            this.currentSlideIndex = this.slides.indexOf(entry.target);
+                        }
+                    });
+                }, { threshold: 0.5 });
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    // Prevenir comportamiento predeterminado del scroll para controlar el paso exacto
+                    if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+                        e.preventDefault();
+                        this.goToNextSlide();
+                    } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+                        e.preventDefault();
+                        this.goToPrevSlide();
+                    }
+                });
+            }
+
+            goToNextSlide() {
+                if (this.currentSlideIndex < this.slides.length - 1) {
+                    this.currentSlideIndex++;
+                    this.slides[this.currentSlideIndex].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            goToPrevSlide() {
+                if (this.currentSlideIndex > 0) {
+                    this.currentSlideIndex--;
+                    this.slides[this.currentSlideIndex].scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            triggerSlideInit(id) {
+                if (id === 'slide-title' && !window.titleRendered) {
+                    renderTitleScene();
+                    window.titleRendered = true;
+                } else if (id === 'slide-adapter-demo' && !window.adapterRendered) {
+                    renderAdapterScene();
+                    window.adapterRendered = true;
+                } else if (id === 'slide-builder-demo' && !window.builderRendered) {
+                    renderBuilderScene();
+                    window.builderRendered = true;
+                } else if (id === 'slide-iterator-demo' && !window.iteratorRendered) {
+                    renderIteratorScene();
+                    window.iteratorRendered = true;
+                }
+            }
+        }
+
+        /* ===========================================
+           MOTOR DE GENERACIÓN DE VÓXELES
+           =========================================== */
+        function createVoxel(x, y, z, color, id = null) {
+            const v = document.createElement('div');
+            v.className = 'voxel';
+            if (id) v.id = id;
+            v.style.setProperty('--x', x);
+            v.style.setProperty('--y', y);
+            v.style.setProperty('--z', z);
+            v.style.setProperty('--v-color', color);
+
+            // AQUI ESTABA EL ERROR: El array y el comentario estaban juntos en una sola línea.
+            // Ahora se inyectan correctamente las 6 caras para cada vóxel
+            const faces = ['top', 'bottom', 'left', 'right', 'front', 'back'];
+            faces.forEach(faceClass => {
+                const face = document.createElement('div');
+                face.className = `face ${faceClass}`;
+                v.appendChild(face);
+            });
+            
+            return { element: v, coords: {x, y, z} };
+        }
+
+        function renderScene(containerId, voxels) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = ''; 
+            
+            // Painter's algorithm (Z-Index sorting preventivo)
+            voxels.sort((a, b) => {
+                const depthA = a.coords.x + a.coords.z - a.coords.y;
+                const depthB = b.coords.x + b.coords.z - b.coords.y;
+                return depthB - depthA;
+            });
+
+            voxels.forEach(v => container.appendChild(v.element));
+        }
+
+        const colors = {
+            slate: '#5e7c88',
+            rust: '#9e6b5a',
+            sand: '#c4b8aa',
+            sage: '#6b7a62',
+            gold: '#d4a373',
+            dark: '#3a3836'
+        };
+
+        // 1. Escena Título
+        function renderTitleScene() {
+            let voxels =[];
+            for(let x=0; x<3; x++){
+                for(let z=0; z<3; z++){
+                    for(let y=0; y<3; y++){
+                        if((x+y+z) % 2 === 0) {
+                            let color = y===2 ? colors.rust : (x===1 ? colors.sand : colors.slate);
+                            voxels.push(createVoxel(x-1, y-1, z-1, color));
+                        }
+                    }
+                }
+            }
+            renderScene('world-title', voxels);
+            
+            const world = document.getElementById('world-title');
+            let angle = 45;
+            setInterval(() => {
+                angle += 0.3;
+                world.style.transform = `rotateX(-35deg) rotateY(${angle}deg)`;
+            }, 50);
+        }
+
+        // 2. Escena Adapter
+        let adapterVoxels =[];
+        function renderAdapterScene() {
+            adapterVoxels =[];
+            // Target (Izquierda)
+            adapterVoxels.push(createVoxel(-3, 0, 0, colors.slate));
+            adapterVoxels.push(createVoxel(-3, 1, 0, colors.slate));
+            adapterVoxels.push(createVoxel(-3, -1, 0, colors.slate));
+            adapterVoxels.push(createVoxel(-2, 1, 0, colors.slate));
+            adapterVoxels.push(createVoxel(-2, -1, 0, colors.slate));
+
+            // Adaptee (Derecha)
+            adapterVoxels.push(createVoxel(3, 0, 0, colors.rust));
+            adapterVoxels.push(createVoxel(4, 0, 0, colors.rust));
+            adapterVoxels.push(createVoxel(4, 1, 0, colors.rust));
+            adapterVoxels.push(createVoxel(4, -1, 0, colors.rust));
+
+            // Adapter Bridge
+            for(let i = -2; i <= 2; i++) {
+                let v = createVoxel(i, 6, 0, colors.sand, `adapter-piece-${i}`);
+                v.element.style.opacity = '0';
+                adapterVoxels.push(v);
+            }
+            renderScene('world-adapter', adapterVoxels);
+        }
+
+        function triggerAdapter() {
+            const world = document.getElementById('world-adapter');
+            world.style.transform = `rotateX(-15deg) rotateY(15deg)`;
+            
+            for(let i = -2; i <= 2; i++) {
+                setTimeout(() => {
+                    const el = document.getElementById(`adapter-piece-${i}`);
+                    if(el) {
+                        el.style.opacity = '1';
+                        el.style.setProperty('--y', '0');
+                    }
+                }, (i+2) * 200);
+            }
+        }
+
+        // 3. Escena Builder
+        let builderVoxels =[];
+        const builderPlan =[
+            [-2,-1,0], [-1,-1,0], [0,-1,0], [1,-1,0], [2,-1,0],
+            [2,0,0],[2,1,0], [2,2,0],
+            [-2,0,0],[-2,1,0], [-2,2,0],
+            [-2,3,0],[-1,3,0],[0,3,0], [1,3,0], [2,3,0]
+        ];
+
+        function renderBuilderScene() {
+            builderVoxels =[];
+            builderPlan.forEach((pos, index) => {
+                let v = createVoxel(pos[0], pos[1] + 6, pos[2], colors.sage, `build-piece-${index}`);
+                v.element.style.setProperty('--s', '0'); 
+                builderVoxels.push(v);
+            });
+            renderScene('world-builder', builderVoxels);
+        }
+
+        function triggerBuilder() {
+            builderPlan.forEach((pos, index) => {
+                const el = document.getElementById(`build-piece-${index}`);
+                if(el) {
+                    el.style.transition = 'none';
+                    el.style.setProperty('--s', '0');
+                    el.style.setProperty('--y', pos[1] + 6);
+                }
+            });
+
+            setTimeout(() => {
+                const world = document.getElementById('world-builder');
+                world.style.transform = `rotateX(-15deg) rotateY(15deg)`;
+
+                builderPlan.forEach((pos, index) => {
+                    setTimeout(() => {
+                        const el = document.getElementById(`build-piece-${index}`);
+                        if(el) {
+                            el.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s';
+                            el.style.setProperty('--s', '1');
+                            el.style.setProperty('--y', pos[1]);
+                        }
+                    }, index * 100);
+                });
+            }, 50);
+        }
+
+        // 4. Escena Iterator
+        let iteratorVoxels = [];
+        const pathCoords =[
+            [0,0,0], [1,0,0], [2,0,0],[2,0,1], [2,0,2], [1,0,2],[0,0,2], [-1,0,2], [-2,0,2],[-2,0,1],[-2,0,0], [-2,0,-1], [-2,0,-2],[-1,0,-2], [0,0,-2], [1,0,-2],[2,0,-2],[3,0,-2], [3,0,-1]
+        ];
+        let iteratorInterval = null;
+
+        function renderIteratorScene() {
+            iteratorVoxels =[];
+            pathCoords.forEach((pos, i) => {
+                iteratorVoxels.push(createVoxel(pos[0], pos[1], pos[2], colors.dark, `path-node-${i}`));
+            });
+            let cursor = createVoxel(pathCoords[0][0], pathCoords[0][1] + 1, pathCoords[0][2], colors.gold, 'iter-cursor');
+            iteratorVoxels.push(cursor);
+            renderScene('world-iterator', iteratorVoxels);
+        }
+
+        function triggerIterator() {
+            if(iteratorInterval) clearInterval(iteratorInterval);
+            
+            const cursor = document.getElementById('iter-cursor');
+            let step = 0;
+
+            iteratorInterval = setInterval(() => {
+                if (step >= pathCoords.length) {
+                    clearInterval(iteratorInterval);
+                    return;
+                }
+                const pos = pathCoords[step];
+                cursor.style.setProperty('--x', pos[0]);
+                cursor.style.setProperty('--z', pos[2]);
+                
+                const node = document.getElementById(`path-node-${step}`);
+                if(node) {
+                    node.style.setProperty('--v-color', colors.sand);
+                    setTimeout(() => {
+                        node.style.setProperty('--v-color', colors.dark);
+                    }, 300);
+                }
+                step++;
+            }, 400); 
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new SlidePresentation();
+        });
+
+    </script>
+</body>
+</html>
