@@ -76,6 +76,39 @@
         }
 
         /* ===========================================
+           INDICADOR DE PROGRESO (NUEVO)
+           =========================================== */
+        .progress-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--border-subtle);
+            z-index: 1000;
+            pointer-events: none;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--voxel-gold);
+            width: 0%;
+            transition: width 0.3s var(--ease-out-expo);
+        }
+        
+        .slide-counter {
+            position: fixed;
+            top: 1rem;
+            right: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: var(--small-size);
+            color: var(--text-secondary);
+            opacity: 0.7;
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        /* ===========================================
            LAYOUTS
            =========================================== */
         .split-layout {
@@ -145,6 +178,7 @@
         ul { margin-left: 1.5rem; margin-bottom: var(--content-gap); }
         li { margin-bottom: 0.5rem; }
         strong { color: var(--text-primary); font-weight: 600; }
+        .highlight-text { color: var(--voxel-sand); font-family: var(--font-mono); font-size: 0.9em; }
 
         .code-block {
             font-family: var(--font-mono);
@@ -201,6 +235,7 @@
         .reveal:nth-child(2) { transition-delay: 0.2s; }
         .reveal:nth-child(3) { transition-delay: 0.3s; }
         .reveal:nth-child(4) { transition-delay: 0.4s; }
+        .reveal:nth-child(5) { transition-delay: 0.5s; }
 
         /* ===========================================
            MOTOR DE VÓXELES 3D CSS
@@ -218,7 +253,7 @@
             position: relative;
             transform-style: preserve-3d;
             transform: rotateX(-35deg) rotateY(45deg);
-            transition: transform 1.2s var(--ease-out-expo);
+            transition: transform 1.5s var(--ease-out-expo);
             width: 0; height: 0;
         }
 
@@ -234,7 +269,7 @@
                 calc(var(--y) * -40px),
                 calc(var(--z) * 40px)
             ) scale3d(var(--s, 1), var(--s, 1), var(--s, 1));
-            transition: transform 0.6s var(--ease-out-expo), opacity 0.4s;
+            opacity: 1;
         }
 
         .voxel .face {
@@ -245,7 +280,6 @@
             backface-visibility: visible;
         }
 
-        /* Construcción de las 6 caras del cubo */
         .voxel .front  { transform: translateZ(20px); background: var(--v-color); }
         .voxel .back   { transform: translateZ(-20px) rotateY(180deg); background: color-mix(in srgb, var(--v-color) 40%, black); }
         .voxel .right  { transform: translateX(20px) rotateY(90deg); background: color-mix(in srgb, var(--v-color) 70%, black); }
@@ -253,32 +287,22 @@
         .voxel .top    { transform: translateY(-20px) rotateX(90deg); background: color-mix(in srgb, var(--v-color) 60%, white); }
         .voxel .bottom { transform: translateY(20px) rotateX(-90deg); background: color-mix(in srgb, var(--v-color) 20%, black); }
 
-        .btn-interactive {
-            background: transparent;
-            border: 1px solid var(--border-subtle);
-            color: var(--text-primary);
-            padding: 0.75rem 1.5rem;
-            font-family: var(--font-mono);
-            font-size: var(--small-size);
-            cursor: pointer;
-            transition: background 0.3s, border-color 0.3s;
-            margin-top: 1rem;
-            display: inline-block;
-        }
-        .btn-interactive:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--text-secondary);
-        }
-
         @media (max-width: 900px) {
             .split-layout { flex-direction: column; }
             .content-panel { width: 100%; height: 50%; border-right: none; border-bottom: 1px solid var(--border-subtle); }
             .visual-panel { width: 100%; height: 50%; }
             .grid-2 { grid-template-columns: 1fr; gap: 2rem; }
+            .slide-counter { top: auto; bottom: 1rem; right: 1.5rem; }
         }
     </style>
 </head>
 <body>
+
+    <!-- INDICADORES DE PROGRESO (NUEVOS) -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+    <div class="slide-counter" id="slideCounter">1 / 9</div>
 
     <!-- DIAPOSITIVA 1: TÍTULO -->
     <section class="slide" id="slide-title">
@@ -289,7 +313,7 @@
                 <div class="authors reveal">
                     Presentado por:
                     <span>Iván Piñeres [estudiante]</span>
-                    <span>Anderson Gonzalez [estudiante]</span>
+                    <span>Anderson Gonzalez[estudiante]</span>
                 </div>
             </div>
             <div class="visual-panel">
@@ -298,7 +322,7 @@
                 </div>
             </div>
         </div>
-        <div class="keyboard-hint reveal">Navega usando la Barra Espaciadora[Space] o Flechas</div>
+        <div class="keyboard-hint reveal">[←] Atrás | [→] Siguiente | [Space] Avanzar | Click izq/der para navegar</div>
     </section>
 
     <!-- DIAPOSITIVA 2: INTRODUCCIÓN -->
@@ -360,7 +384,7 @@
                 <h3 class="reveal">Visualización: Adapter</h3>
                 <p class="reveal">A la izquierda, nuestro sistema <strong>Target</strong> (Pizarra). A la derecha, el <strong>Adaptee</strong> externo (Óxido). Sus ranuras físicas son opuestas.</p>
                 <p class="reveal">El <strong>Adapter</strong> (Arena) rellena el vacío arquitectónico traduciendo las llamadas dinámicamente.</p>
-                <button class="btn-interactive reveal" onclick="triggerAdapter()">Generar Adapter Bridge</button>
+                <p class="reveal highlight-text">[ Ciclo Continuo ]<br>Observa cómo el componente puente desciende iterativamente para reconciliar las diferencias geométricas, manteniendo la integración intacta.</p>
             </div>
             <div class="visual-panel">
                 <div class="scene-3d">
@@ -401,8 +425,7 @@
             <div class="content-panel">
                 <h3 class="reveal">Visualización: Builder</h3>
                 <p class="reveal">El algoritmo ensambla un objeto complejo por partes. En este caso, el director ordena: Base → Pilares → Puente superior.</p>
-                <p class="reveal">Observa cómo la rotación revela que <strong>todas las caras del objeto existen</strong> sin importar desde dónde se mire.</p>
-                <button class="btn-interactive reveal" onclick="triggerBuilder()">Ejecutar Director.construct()</button>
+                <p class="reveal highlight-text">[ Ciclo Continuo ]<br>El sistema auto-construye la entidad sistemáticamente. Esta abstracción garantiza que la complejidad arquitectónica final no contamine la inicialización.</p>
             </div>
             <div class="visual-panel">
                 <div class="scene-3d">
@@ -446,9 +469,8 @@
         <div class="split-layout">
             <div class="content-panel">
                 <h3 class="reveal">Visualización: Iterator</h3>
-                <p class="reveal">El cursor (Dorado) actúa como nuestro iterador. Se desplaza a través de una compleja matriz en espiral.</p>
-                <p class="reveal">El consumidor solo llama a <code>.next()</code>; el iterador calcula automáticamente las coordenadas matemáticas X, Z internas.</p>
-                <button class="btn-interactive reveal" onclick="triggerIterator()">while (iter.hasNext())</button>
+                <p class="reveal">El cursor (Dorado) actúa como nuestro iterador. Se desplaza a través de una compleja matriz de datos dispuesta en espiral.</p>
+                <p class="reveal highlight-text">[ Ciclo Continuo ]<br>El cursor encapsula el estado de navegación de forma autónoma. El cliente desconoce la existencia de una matriz bidimensional, solo pide el elemento "siguiente".</p>
             </div>
             <div class="visual-panel">
                 <div class="scene-3d">
@@ -478,8 +500,14 @@
             constructor() {
                 this.slides = Array.from(document.querySelectorAll('.slide'));
                 this.currentSlideIndex = 0;
+                this.totalSlides = this.slides.length;
+                this.progressBar = document.getElementById('progressBar');
+                this.slideCounter = document.getElementById('slideCounter');
+                
                 this.setupIntersectionObserver();
                 this.setupKeyboardNav();
+                this.setupClickNav();
+                this.updateProgressIndicator();
             }
 
             setupIntersectionObserver() {
@@ -488,8 +516,8 @@
                         if (entry.isIntersecting) {
                             entry.target.classList.add('visible');
                             this.triggerSlideInit(entry.target.id);
-                            // Actualizar indice actual basado en vista
                             this.currentSlideIndex = this.slides.indexOf(entry.target);
+                            this.updateProgressIndicator();
                         }
                     });
                 }, { threshold: 0.5 });
@@ -499,19 +527,45 @@
 
             setupKeyboardNav() {
                 document.addEventListener('keydown', (e) => {
-                    // Prevenir comportamiento predeterminado del scroll para controlar el paso exacto
-                    if (['ArrowDown', 'PageDown', ' '].includes(e.key)) {
+                    // Solo permitir Space, ArrowUp, ArrowDown
+                    if (e.key === ' ' || e.key === 'ArrowDown') {
                         e.preventDefault();
                         this.goToNextSlide();
-                    } else if (['ArrowUp', 'PageUp'].includes(e.key)) {
+                    } else if (e.key === 'ArrowUp') {
                         e.preventDefault();
                         this.goToPrevSlide();
                     }
+                    // Ignorar todas las demás teclas
                 });
             }
 
+            setupClickNav() {
+                document.addEventListener('click', (e) => {
+                    const clickX = e.clientX;
+                    const windowWidth = window.innerWidth;
+                    
+                    // Zona izquierda (primer tercio) para retroceder
+                    if (clickX < windowWidth * 0.33) {
+                        e.preventDefault();
+                        this.goToPrevSlide();
+                    }
+                    // Zona derecha (último tercio) para avanzar
+                    else if (clickX > windowWidth * 0.66) {
+                        e.preventDefault();
+                        this.goToNextSlide();
+                    }
+                    // Zona central (33%-66%) no hace nada - protege contenido interactivo
+                });
+            }
+
+            updateProgressIndicator() {
+                const progress = ((this.currentSlideIndex + 1) / this.totalSlides) * 100;
+                this.progressBar.style.width = `${progress}%`;
+                this.slideCounter.textContent = `${this.currentSlideIndex + 1} / ${this.totalSlides}`;
+            }
+
             goToNextSlide() {
-                if (this.currentSlideIndex < this.slides.length - 1) {
+                if (this.currentSlideIndex < this.totalSlides - 1) {
                     this.currentSlideIndex++;
                     this.slides[this.currentSlideIndex].scrollIntoView({ behavior: 'smooth' });
                 }
@@ -530,12 +584,15 @@
                     window.titleRendered = true;
                 } else if (id === 'slide-adapter-demo' && !window.adapterRendered) {
                     renderAdapterScene();
+                    loopAdapter();
                     window.adapterRendered = true;
                 } else if (id === 'slide-builder-demo' && !window.builderRendered) {
                     renderBuilderScene();
+                    loopBuilder();
                     window.builderRendered = true;
                 } else if (id === 'slide-iterator-demo' && !window.iteratorRendered) {
                     renderIteratorScene();
+                    loopIterator();
                     window.iteratorRendered = true;
                 }
             }
@@ -553,9 +610,7 @@
             v.style.setProperty('--z', z);
             v.style.setProperty('--v-color', color);
 
-            // AQUI ESTABA EL ERROR: El array y el comentario estaban juntos en una sola línea.
-            // Ahora se inyectan correctamente las 6 caras para cada vóxel
-            const faces = ['top', 'bottom', 'left', 'right', 'front', 'back'];
+            const faces =['top', 'bottom', 'left', 'right', 'front', 'back'];
             faces.forEach(faceClass => {
                 const face = document.createElement('div');
                 face.className = `face ${faceClass}`;
@@ -569,7 +624,6 @@
             const container = document.getElementById(containerId);
             container.innerHTML = ''; 
             
-            // Painter's algorithm (Z-Index sorting preventivo)
             voxels.sort((a, b) => {
                 const depthA = a.coords.x + a.coords.z - a.coords.y;
                 const depthB = b.coords.x + b.coords.z - b.coords.y;
@@ -588,7 +642,6 @@
             dark: '#3a3836'
         };
 
-        // 1. Escena Título
         function renderTitleScene() {
             let voxels =[];
             for(let x=0; x<3; x++){
@@ -606,29 +659,24 @@
             const world = document.getElementById('world-title');
             let angle = 45;
             setInterval(() => {
-                angle += 0.3;
+                angle += 0.15;
                 world.style.transform = `rotateX(-35deg) rotateY(${angle}deg)`;
             }, 50);
         }
 
-        // 2. Escena Adapter
-        let adapterVoxels =[];
         function renderAdapterScene() {
-            adapterVoxels =[];
-            // Target (Izquierda)
+            let adapterVoxels =[];
             adapterVoxels.push(createVoxel(-3, 0, 0, colors.slate));
             adapterVoxels.push(createVoxel(-3, 1, 0, colors.slate));
             adapterVoxels.push(createVoxel(-3, -1, 0, colors.slate));
             adapterVoxels.push(createVoxel(-2, 1, 0, colors.slate));
             adapterVoxels.push(createVoxel(-2, -1, 0, colors.slate));
 
-            // Adaptee (Derecha)
             adapterVoxels.push(createVoxel(3, 0, 0, colors.rust));
             adapterVoxels.push(createVoxel(4, 0, 0, colors.rust));
             adapterVoxels.push(createVoxel(4, 1, 0, colors.rust));
             adapterVoxels.push(createVoxel(4, -1, 0, colors.rust));
 
-            // Adapter Bridge
             for(let i = -2; i <= 2; i++) {
                 let v = createVoxel(i, 6, 0, colors.sand, `adapter-piece-${i}`);
                 v.element.style.opacity = '0';
@@ -637,32 +685,47 @@
             renderScene('world-adapter', adapterVoxels);
         }
 
-        function triggerAdapter() {
+        function loopAdapter() {
             const world = document.getElementById('world-adapter');
-            world.style.transform = `rotateX(-15deg) rotateY(15deg)`;
             
+            world.style.transition = 'none';
+            world.style.transform = `rotateX(-20deg) rotateY(30deg)`;
             for(let i = -2; i <= 2; i++) {
-                setTimeout(() => {
-                    const el = document.getElementById(`adapter-piece-${i}`);
-                    if(el) {
-                        el.style.opacity = '1';
-                        el.style.setProperty('--y', '0');
-                    }
-                }, (i+2) * 200);
+                const el = document.getElementById(`adapter-piece-${i}`);
+                if(el) {
+                    el.style.transition = 'none';
+                    el.style.opacity = '0';
+                    el.style.setProperty('--y', '6');
+                }
             }
+
+            setTimeout(() => {
+                world.style.transition = 'transform 2.5s var(--ease-out-expo)';
+                world.style.transform = `rotateX(-15deg) rotateY(15deg)`;
+                
+                for(let i = -2; i <= 2; i++) {
+                    setTimeout(() => {
+                        const el = document.getElementById(`adapter-piece-${i}`);
+                        if(el) {
+                            el.style.transition = 'opacity 0.6s, transform 1s var(--ease-out-expo)';
+                            el.style.opacity = '1';
+                            el.style.setProperty('--y', '0');
+                        }
+                    }, (i+2) * 350);
+                }
+            }, 500);
+
+            setTimeout(loopAdapter, 6000); 
         }
 
-        // 3. Escena Builder
-        let builderVoxels =[];
-        const builderPlan =[
-            [-2,-1,0], [-1,-1,0], [0,-1,0], [1,-1,0], [2,-1,0],
+        const builderPlan =[[-2,-1,0], [-1,-1,0], [0,-1,0],[1,-1,0], [2,-1,0],
             [2,0,0],[2,1,0], [2,2,0],
             [-2,0,0],[-2,1,0], [-2,2,0],
             [-2,3,0],[-1,3,0],[0,3,0], [1,3,0], [2,3,0]
         ];
 
         function renderBuilderScene() {
-            builderVoxels =[];
+            let builderVoxels =[];
             builderPlan.forEach((pos, index) => {
                 let v = createVoxel(pos[0], pos[1] + 6, pos[2], colors.sage, `build-piece-${index}`);
                 v.element.style.setProperty('--s', '0'); 
@@ -671,7 +734,11 @@
             renderScene('world-builder', builderVoxels);
         }
 
-        function triggerBuilder() {
+        function loopBuilder() {
+            const world = document.getElementById('world-builder');
+            
+            world.style.transition = 'none';
+            world.style.transform = `rotateX(-25deg) rotateY(-35deg)`;
             builderPlan.forEach((pos, index) => {
                 const el = document.getElementById(`build-piece-${index}`);
                 if(el) {
@@ -682,31 +749,30 @@
             });
 
             setTimeout(() => {
-                const world = document.getElementById('world-builder');
+                world.style.transition = 'transform 3.5s var(--ease-out-expo)';
                 world.style.transform = `rotateX(-15deg) rotateY(15deg)`;
 
                 builderPlan.forEach((pos, index) => {
                     setTimeout(() => {
                         const el = document.getElementById(`build-piece-${index}`);
                         if(el) {
-                            el.style.transition = 'transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s';
+                            el.style.transition = 'transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.6s';
                             el.style.setProperty('--s', '1');
                             el.style.setProperty('--y', pos[1]);
                         }
-                    }, index * 100);
+                    }, index * 200);
                 });
-            }, 50);
+            }, 500);
+
+            setTimeout(loopBuilder, 7500);
         }
 
-        // 4. Escena Iterator
-        let iteratorVoxels = [];
         const pathCoords =[
-            [0,0,0], [1,0,0], [2,0,0],[2,0,1], [2,0,2], [1,0,2],[0,0,2], [-1,0,2], [-2,0,2],[-2,0,1],[-2,0,0], [-2,0,-1], [-2,0,-2],[-1,0,-2], [0,0,-2], [1,0,-2],[2,0,-2],[3,0,-2], [3,0,-1]
+            [0,0,0], [1,0,0],[2,0,0],[2,0,1], [2,0,2], [1,0,2],[0,0,2], [-1,0,2], [-2,0,2],[-2,0,1],[-2,0,0], [-2,0,-1], [-2,0,-2],[-1,0,-2], [0,0,-2], [1,0,-2],[2,0,-2],[3,0,-2], [3,0,-1]
         ];
-        let iteratorInterval = null;
-
+        
         function renderIteratorScene() {
-            iteratorVoxels =[];
+            let iteratorVoxels =[];
             pathCoords.forEach((pos, i) => {
                 iteratorVoxels.push(createVoxel(pos[0], pos[1], pos[2], colors.dark, `path-node-${i}`));
             });
@@ -715,15 +781,21 @@
             renderScene('world-iterator', iteratorVoxels);
         }
 
-        function triggerIterator() {
-            if(iteratorInterval) clearInterval(iteratorInterval);
-            
+        function loopIterator() {
             const cursor = document.getElementById('iter-cursor');
             let step = 0;
 
-            iteratorInterval = setInterval(() => {
+            cursor.style.transition = 'none';
+            cursor.style.setProperty('--x', pathCoords[0][0]);
+            cursor.style.setProperty('--z', pathCoords[0][2]);
+
+            void cursor.offsetWidth;
+            cursor.style.transition = 'transform 0.6s var(--ease-out-expo)';
+
+            const iterInterval = setInterval(() => {
                 if (step >= pathCoords.length) {
-                    clearInterval(iteratorInterval);
+                    clearInterval(iterInterval);
+                    setTimeout(loopIterator, 2000);
                     return;
                 }
                 const pos = pathCoords[step];
@@ -735,16 +807,15 @@
                     node.style.setProperty('--v-color', colors.sand);
                     setTimeout(() => {
                         node.style.setProperty('--v-color', colors.dark);
-                    }, 300);
+                    }, 500); 
                 }
                 step++;
-            }, 400); 
+            }, 600);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
             new SlidePresentation();
         });
-
     </script>
 </body>
 </html>
